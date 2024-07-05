@@ -1,0 +1,4 @@
+{
+  "extends": "./tsconfig.json",
+  "include": ["src", "mock", "build", "unocss.config.ts", "vite.config.ts", ".eslintrc.cjs"]
+}

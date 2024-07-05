@@ -1,0 +1,8 @@
+node_modules
+
+site
+public
+
+src/views/staticTrack/data
+src/types/components.d.ts
+src/types/auto-imports.d.ts
