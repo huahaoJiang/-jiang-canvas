@@ -1,6 +1,6 @@
 {
-  "name": "@jianghh/canvas",
-  "version": "0.0.1",
+  "name": "jianghh-canvas",
+  "version": "0.0.3",
   "private": false,
   "description": "canvas 画板，支持笔写、手写、鼠标绘图，自动保存，撤销",
   "main": "lib/index.js",
@@ -43,6 +43,8 @@
     "type": "git",
     "url": ""
   },
-  "bugs": {},
-  "homepage": ""
+  "homepage": "",
+  "directories": {
+    "lib": "lib"
+  }
 }

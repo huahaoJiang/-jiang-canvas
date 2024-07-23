@@ -2,18 +2,18 @@ export { default as themeSettings } from './theme.json'
 import type { GlobalThemeOverrides } from 'naive-ui'
 export const themeOverrides: GlobalThemeOverrides = {
   common: {
-    primaryColor: '#489DBA',
-    primaryColorHover: '#489DBA',
-    primaryColorPressed: '#2B4C59FF',
-    primaryColorSuppl: '#316C7263'
+    primaryColor: '#722ED1',
+    primaryColorHover: '#9254DE',
+    primaryColorPressed: '#B37FEB',
+    primaryColorSuppl: '#D3ADF7'
   },
   Menu: {
-    itemTextColor: 'rgba(236,245,254,0.7)',
-    itemTextColorChildActiveHorizontal: '#FFF',
-    itemTextColorChildActiveHoverHorizontal: '#FFF',
-    itemTextColorActiveHorizontal: '#FFF',
-    itemTextColorHoverHorizontal: '#FFF',
-    itemTextColorActiveHoverHorizontal: '#FFF'
+    itemTextColor: '#120338',
+    itemTextColorChildActiveHorizontal: '#22075E',
+    itemTextColorChildActiveHoverHorizontal: '#391085',
+    itemTextColorActiveHorizontal: '#22075E',
+    itemTextColorHoverHorizontal: '#391085',
+    itemTextColorActiveHoverHorizontal: '#391085'
   },
   Card: {
     paddingMedium: '16px',

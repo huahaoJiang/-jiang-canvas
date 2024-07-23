@@ -29,6 +29,12 @@ export interface Options {
   // 动态初始化画布高度
   height?: number
 
+  // 线的宽度
+  lineWidth?: number
+
+  // 画笔颜色
+  color?: string
+
   // 画布容器的高度偏移量，容器高度 = height + containerHeightOffset
   containerHeightOffset?: number
 
@@ -39,14 +45,14 @@ export interface Options {
 // 事件名
 export type EventTypes = 'pointerdown' | 'pointermove' | 'pointerup'
 // 工具名
-export type ToolType = 'Marker' | 'Line' | 'Rect' | 'FillRect' | 'Arc' | 'FillRect' | 'Erase'
+export type ToolType = 'Cursor' | 'Marker' | 'Pen' | 'Line' | 'Rect' | 'Arc' | 'Erase'
 // 允许绘图的方式
 // eslint-disable-next-line @typescript-eslint/ban-types
 export type AllowType = 'mouse' | 'touch' | 'pen' | (string & {})
 
 export class CanvasGraffiti implements ToolOptions {
   options = {
-    currentTool: 'Marker',
+    currentTool: 'Cursor',
     createBufferCanvasStyle: {},
     allowType: ['pen', 'mouse', 'touch'],
     allowButton: [0]
@@ -71,7 +77,7 @@ export class CanvasGraffiti implements ToolOptions {
   points: { x: number; y: number }[] = []
 
   // 工具名
-  currentTool: ToolType = 'Marker'
+  currentTool: ToolType = 'Cursor'
 
   // 离屏渲染画布
   bufferCanvas: HTMLCanvasElement | undefined
@@ -117,8 +123,16 @@ export class CanvasGraffiti implements ToolOptions {
 
   static toolList = [
     {
+      label: '光标',
+      value: 'Cursor'
+    },
+    {
       label: '记号笔',
       value: 'Marker'
+    },
+    {
+      label: '钢笔',
+      value: 'Pen'
     },
     {
       label: '直线',
@@ -129,16 +143,8 @@ export class CanvasGraffiti implements ToolOptions {
       value: 'Rect'
     },
     {
-      label: '实心矩形',
-      value: 'FillRect'
-    },
-    {
       label: '空心圆',
       value: 'Arc'
-    },
-    {
-      label: '实心圆',
-      value: 'FillArc'
     }
   ] as const
 
@@ -168,12 +174,16 @@ export class CanvasGraffiti implements ToolOptions {
     this.options.width && (this.ctx.canvas.width = this.options.width)
     this.options.height && (this.ctx.canvas.height = this.options.height - this.containerHeightOffset)
 
+    this.options.lineWidth && (this.lineWidth = this.options.lineWidth)
+    this.options.color && (this.color = this.options.color)
+
     this.currentTool = this.options.currentTool!
     this.allowType = this.options.allowType!
     this.allowButton = this.options.allowButton!
 
     useStack(this, options.cacheSize)
     useEventBus(this)
+    this.ctx.save()
     this.init()
   }
 
@@ -191,6 +201,7 @@ export class CanvasGraffiti implements ToolOptions {
    * 初始化
    */
   init() {
+    this.el.style.touchAction = 'none'
     // 绑定 this
     this.pointerdown = this.pointerdown.bind(this)
     this.pointermove = this.pointermove.bind(this)
@@ -235,10 +246,6 @@ export class CanvasGraffiti implements ToolOptions {
     if (!this.allowType.includes(event.pointerType)) return
 
     if (event.pointerType === 'mouse' && !this.allowButton.includes(event.button)) return
-    /*
-     * pointermove 事件，不设置该属性 pointermove 移动端只会触发几次！！！-
-     */
-    this.el.style.touchAction = 'none'
 
     this.beginPoint = { x: event.offsetX, y: event.offsetY }
 
@@ -269,7 +276,7 @@ export class CanvasGraffiti implements ToolOptions {
 
   // 抬起
   pointerup(event: PointerEvent) {
-    this.el.style.touchAction = 'auto'
+    // this.el.style.touchAction = 'auto'
 
     if (!this.allowType.includes(event.pointerType)) return
 

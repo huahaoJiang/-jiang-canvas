@@ -4,10 +4,15 @@
       class="bg-#f5f5f5"
       position="absolute">
       <n-layout-header
-        style="padding: 12px 24px"
+        class="pt-14px"
         bordered
         :style="{ height: useTheme.header.height + 'px' }">
-        <div class="leading-9 text-#333 text-18px">Jianghh</div>
+        <div class="pl-56px">
+          <n-image
+            width="110"
+            preview-disabled
+            :src="Logo"></n-image>
+        </div>
       </n-layout-header>
 
       <n-layout
@@ -17,14 +22,10 @@
         :style="{ top: useTheme.header.height + 'px' }">
         <n-layout-sider
           v-if="currentScreen === 'large'"
-          bordered
           :native-scrollbar="false"
-          collapse-mode="transform"
-          :collapsed-width="40"
           :width="220"
-          show-trigger="arrow-circle"
           content-style="padding: 24px">
-          <n-h3>画布涂鸦</n-h3>
+          <DemoMenu />
         </n-layout-sider>
         <n-layout :native-scrollbar="false">
           <FloatLayer />
@@ -48,9 +49,11 @@
 <script setup lang="ts">
 import throttle from 'lodash.throttle'
 
+import Logo from '@/assets/images/logo.png'
 import { useThemeStore } from '@/store/theme'
 
 import AppMain from './components/AppMain.vue'
+import DemoMenu from './components/demoMenu.vue'
 import FloatLayer from './components/floatLayer.vue'
 import WaterMark from './components/waterMark.vue'
 
@@ -59,6 +62,7 @@ const useTheme = useThemeStore()
 onMounted(() => {
   window.addEventListener('resize', throttle(handlResize, 100))
 })
+
 onBeforeUnmount(() => {
   window.removeEventListener('resize', handlResize)
 })

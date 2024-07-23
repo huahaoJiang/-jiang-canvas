@@ -1,5 +1,4 @@
-import { ToolOptions } from "../types"
-// import { getPos } from "./Tool"
+import { ToolOptions } from '../types'
 
 // 记号笔
 export const Marker = {
@@ -14,18 +13,13 @@ export const Marker = {
     const controlPoint = lastTwoPoints[0]
     const endPoint = {
       x: (lastTwoPoints[0].x + lastTwoPoints[1].x) / 2,
-      y: (lastTwoPoints[0].y + lastTwoPoints[1].y) / 2,
+      y: (lastTwoPoints[0].y + lastTwoPoints[1].y) / 2
     }
     this.ctx.beginPath()
     this.ctx.moveTo(this.beginPoint.x, this.beginPoint.y)
-    this.ctx.quadraticCurveTo(
-      controlPoint.x,
-      controlPoint.y,
-      endPoint.x,
-      endPoint.y
-    )
+    this.ctx.quadraticCurveTo(controlPoint.x, controlPoint.y, endPoint.x, endPoint.y)
     this.ctx.stroke()
     this.ctx.closePath()
     this.beginPoint = endPoint
-  },
+  }
 } as ToolOptions

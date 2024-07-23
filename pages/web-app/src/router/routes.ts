@@ -42,6 +42,26 @@ export const basicRoutes: Jianghh.IRoute[] = [
           title: '内部错误',
           icon: 'mdi:alert-circle-outline'
         }
+      },
+      {
+        name: 'CanvasGraffiti',
+        path: 'graffiti',
+        component: () => import('@/views/demo/canvas/graffiti.vue'),
+        meta: {
+          title: '涂鸦画板',
+          icon: 'mdi:alert-circle-outline',
+          keepAlive: true
+        }
+      },
+      {
+        name: 'CanvasParticle',
+        path: 'particle',
+        component: () => import('@/views/demo/canvas/particle/index.vue'),
+        meta: {
+          title: '粒子动画',
+          icon: 'mdi:alert-circle-outline',
+          keepAlive: true
+        }
       }
     ]
   }

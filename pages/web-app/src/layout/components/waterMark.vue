@@ -1,7 +1,9 @@
 <template>
   <n-watermark
     class="w-full"
-    :content="name"
+    :image="Logo"
+    :image-width="64"
+    :image-opacity="0.2"
     :font-size="13"
     font-color="rgba(51,51,51,0.06)"
     :font-weight="1000"
@@ -11,7 +13,9 @@
     :y-offset="70"
     :rotate="-25">
     <n-watermark
-      :content="name"
+      :image="Logo"
+      :image-width="64"
+      :image-opacity="0.2"
       :font-size="13"
       font-color="rgba(51,51,51,0.06)"
       :font-weight="1000"
@@ -27,7 +31,9 @@
 </template>
 
 <script lang="ts" setup>
-const name = '姜戈的前端站点'
+import Logo from '@/assets/images/logo.png'
+
+// const name = '姜戈的前端站点'
 const props = defineProps({
   width: {
     type: Number,
