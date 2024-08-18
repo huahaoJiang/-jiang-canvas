@@ -1,6 +1,6 @@
 interface ICacheStack {
-  freshItem: string
-  cacheList: string[]
+  preItem: string
+  revokeList: string[]
   maxSize: number
   push: (item: string) => void
   pop: () => void
@@ -9,41 +9,66 @@ interface ICacheStack {
 
 // 需要考虑初始情况为空白画布和有内容画布
 export class CacheStack implements ICacheStack {
-  freshItem: string = ''
-  cacheList: string[] = []
+  revokeList: string[] = []
+  redoList: string[] = []
+  preItem: string = '' // 存储上一步内容，由于撤销操作是需要滞后一步的，所以有个预备入栈的项
   maxSize = 5
   constructor(maxSize?: number) {
-    this.cacheList = []
+    this.revokeList = []
     maxSize && (this.maxSize = maxSize)
   }
-  get size() {
-    return this.cacheList.length
+  get revokeSize() {
+    return this.revokeList.length
   }
-  get fresh() {
-    return this.freshItem
+
+  get redoSize() {
+    return this.redoList.length
   }
 
   push(item: string) {
-    if (this.size === this.maxSize) {
-      this.cacheList.shift()
-    } else if (this.size > this.maxSize) {
-      this.cacheList = this.cacheList
+    if (this.revokeSize === this.maxSize) {
+      this.revokeList.shift()
+    } else if (this.revokeSize > this.maxSize) {
+      this.revokeList = this.revokeList
         .reverse()
         .splice(0, this.maxSize - 1)
         .reverse()
     }
-    this.freshItem !== '' && this.cacheList.push(this.freshItem)
-    this.freshItem = item
+    // 预备入栈的item存在，往栈里推上一个item，错开入栈
+    this.preItem !== '' && this.revokeList.push(this.preItem)
+    // 当前item赋值给预备入栈的项
+    this.preItem = item
+    this.redoList = []
   }
 
   pop(): string {
-    const item = this.size ? this.cacheList.pop() : ''
-    this.freshItem = item
+    // 这时候的preItem是真正的上一步内容，保存到remakeList中
+    this.redoList.push(this.preItem)
+
+    const item = this.revokeSize ? this.revokeList.pop() : ''
+    // 这时候的preItem是当前内容
+    this.preItem = item
     return item
   }
 
+  popRedo(): string {
+    if (this.redoSize) {
+      // item是上一步内容，返回用于绘制
+      const item = this.redoList.pop()
+
+      // 这时候的this.preItem是item的上一步内容
+      this.revokeList.push(this.preItem)
+      this.preItem = item
+      return item
+    } else {
+      return ''
+    }
+  }
+
   clear() {
-    this.cacheList = []
+    this.revokeList = []
+    this.redoList = []
+    this.preItem = ''
   }
 }
 

@@ -17,10 +17,40 @@
             class="color-primary mt--2px"></i>
         </div>
         <div>
-          <n-button
+          <!-- <n-button
             :disabled="!canRevoke"
             @click="revoke"
             >撤销</n-button
+          >
+          <n-button
+            :disabled="!canRedo"
+            @click="reMake"
+            >回退</n-button
+          > -->
+          <n-button
+            class="ml-10px"
+            @click="checkErase"
+            >橡皮擦</n-button
+          >
+          <n-button
+            class="ml-10px"
+            @click="checkMarker"
+            >记号笔</n-button
+          >
+          <n-button
+            class="ml-10px"
+            @click="checkRect"
+            >画框</n-button
+          >
+          <n-button
+            class="ml-10px"
+            @click="checkArc"
+            >画圆</n-button
+          >
+          <n-button
+            class="ml-10px"
+            @click="checkCursor"
+            >选择</n-button
           >
         </div>
       </div>
@@ -28,12 +58,14 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { CanvasGraffiti } from 'canvas-graffiti'
-
+import { CanvasGraffiti } from '/jhh_project/canvasPro/packages/canvas-graffiti-pro/src/index'
 const pCanvas = ref()
 let canvasGraffiti: CanvasGraffiti
+
 const canRevoke = ref(false)
-let timer: number
+const canRedo = ref(false)
+
+let timer: NodeJS.Timeout
 onMounted(() => {
   const body = pCanvas.value.getBoundingClientRect()
   const height = body.height
@@ -42,19 +74,27 @@ onMounted(() => {
   canvasGraffiti = new CanvasGraffiti({
     el: '#graffitiDemo',
     allowType: ['mouse', 'pen'],
+    currentTool: 'Marker',
     width: width,
     height: height,
     containerHeightOffset: 40,
-    color: '#007aff',
-    lineWidth: 2
+    color: '#333',
+    lineWidth: 3
   })
 
-  canvasGraffiti.$on('stackChange', (item, size) => {
-    if (size === 0) {
+  canvasGraffiti.$on('cacheChange', (item, revokeSize, redoSize) => {
+    if (revokeSize === 0) {
       canRevoke.value = false
     } else {
       canRevoke.value = true
     }
+
+    if (redoSize === 0) {
+      canRedo.value = false
+    } else {
+      canRedo.value = true
+    }
+
     if (timer) {
       clearTimeout(timer)
     }
@@ -87,7 +127,30 @@ function listenerMove(e: PointerEvent) {
     document.removeEventListener('pointerup', stopResize)
   }
 }
-function revoke() {
-  canvasGraffiti.revoke()
+// function revoke() {
+//   canvasGraffiti.revoke()
+// }
+// function reMake() {
+//   canvasGraffiti.redo()
+// }
+function checkMarker() {
+  canvasGraffiti.setCurrentTool('Marker')
+}
+function checkErase() {
+  canvasGraffiti.setCurrentTool('Erase')
+}
+function checkCursor() {
+  canvasGraffiti.setCurrentTool('Cursor')
+}
+function checkRect() {
+  canvasGraffiti.setCurrentTool('Rect')
+}
+function checkArc() {
+  canvasGraffiti.setCurrentTool('Arc')
 }
 </script>
+<style lang="scss" scoped>
+.erase-cursor {
+  cursor: url('@/assets/images/erase.png'), auto;
+}
+</style>

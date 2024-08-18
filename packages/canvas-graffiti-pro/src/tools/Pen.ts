@@ -1,17 +1,13 @@
 import { ToolOptions } from '../types'
 
-// 记号笔
-export const Marker = {
+// 钢笔
+export const Pen = {
   pointerdown({ offsetX: x, offsetY: y }: PointerEvent) {
-    this.points.push({ x: x >> 0, y: y >> 0 })
-    //绘制圆点，提升书写效果
     this.ctx.beginPath()
-    this.ctx.arc(this.beginPoint.x, this.beginPoint.y, this.lineWidth / 2, 0, 2 * Math.PI)
-    this.ctx.fill()
-    this.ctx.closePath()
+    this.points.push({ x, y })
   },
   pointermove({ offsetX: x, offsetY: y }: PointerEvent) {
-    this.points.push({ x: x >> 0, y: y >> 0 })
+    this.points.push({ x, y })
     if (this.points.length < 3) return
     const lastTwoPoints = this.points.slice(-2)
     const controlPoint = lastTwoPoints[0]
@@ -23,12 +19,7 @@ export const Marker = {
     this.ctx.moveTo(this.beginPoint.x, this.beginPoint.y)
     this.ctx.quadraticCurveTo(controlPoint.x, controlPoint.y, endPoint.x, endPoint.y)
     this.ctx.stroke()
+    this.ctx.closePath()
     this.beginPoint = endPoint
-  },
-  pointerup() {
-    this.ctx.beginPath()
-    //绘制圆点，提升书写效果
-    this.ctx.arc(this.beginPoint.x, this.beginPoint.y, this.lineWidth / 2, 0, 2 * Math.PI)
-    this.ctx.fill()
   }
 } as ToolOptions

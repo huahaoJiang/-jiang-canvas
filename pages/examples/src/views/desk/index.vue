@@ -28,7 +28,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { CanvasGraffiti } from 'canvas-graffiti'
+import { CanvasGraffiti } from '/jhh_project/canvasPro/packages/canvas-graffiti-pro/src/index'
 
 const pCanvas = ref()
 let canvasGraffiti: CanvasGraffiti

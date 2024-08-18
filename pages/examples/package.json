@@ -11,7 +11,6 @@
   },
   "dependencies": {
     "@vueuse/core": "^10.11.0",
-    "@jianghh/canvas": "workspace:^0.0.1",
     "lodash.debounce": "^4.0.8",
     "lodash.throttle": "^4.1.1",
     "mockjs": "^1.1.0",
@@ -24,6 +23,7 @@
     "@iconify-json/ant-design": "^1.1.16",
     "@types/lodash.debounce": "^4.0.9",
     "@types/lodash.throttle": "^4.1.9",
+    "@types/node": "^18.0.0",
     "@typescript-eslint/eslint-plugin": "^7.14.1",
     "@typescript-eslint/parser": "^7.14.1",
     "@vitejs/plugin-vue": "^5.0.5",

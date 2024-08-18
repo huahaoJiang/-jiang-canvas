@@ -1,8 +1,8 @@
 {
-  "name": "jianghh-canvas",
-  "version": "0.0.9",
+  "name": "jianghh-canvas-pro",
+  "version": "0.0.1",
   "private": false,
-  "description": "canvas画板，支持笔写、手写、鼠标流畅绘图，自动保存，撤销重做",
+  "description": "canvas涂鸦库，支持手、笔、鼠标的流畅高清书写，撤销重做操作。选中元素，移动、缩放、删除等功能。",
   "main": "lib/index.js",
   "module": "es/index.js",
   "types": "es/index.d.ts",
