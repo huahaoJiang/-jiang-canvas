@@ -17,7 +17,7 @@
             class="color-primary mt--2px"></i>
         </div>
         <div>
-          <!-- <n-button
+          <n-button
             :disabled="!canRevoke"
             @click="revoke"
             >撤销</n-button
@@ -26,7 +26,7 @@
             :disabled="!canRedo"
             @click="reMake"
             >回退</n-button
-          > -->
+          >
           <n-button
             class="ml-10px"
             @click="checkErase"
@@ -76,13 +76,12 @@ onMounted(() => {
     allowType: ['mouse', 'pen'],
     currentTool: 'Marker',
     width: width,
-    height: height,
-    containerHeightOffset: 40,
+    height: height - 40,
     color: '#333',
     lineWidth: 3
   })
 
-  canvasGraffiti.$on('cacheChange', (item, revokeSize, redoSize) => {
+  canvasGraffiti.$on('change', (item, revokeSize, redoSize) => {
     if (revokeSize === 0) {
       canRevoke.value = false
     } else {
@@ -101,6 +100,9 @@ onMounted(() => {
     timer = setTimeout(() => {
       console.log(1, '保存咯')
     }, 10000)
+  })
+  canvasGraffiti.$on('sizeChange', ({ height }) => {
+    pCanvas.value.style.height = height + 40 + 'px'
   })
 })
 onBeforeUnmount(() => {
@@ -122,17 +124,18 @@ function listenerMove(e: PointerEvent) {
   }
 
   function stopResize() {
-    canvasGraffiti.updateHeight(height)
+    canvasGraffiti.updateCanvasSize({ height: height - 40 })
+    pCanvas.value.style.height = height + 'px'
     pCanvas.value.removeEventListener('pointermove', resizeDiv)
     document.removeEventListener('pointerup', stopResize)
   }
 }
-// function revoke() {
-//   canvasGraffiti.revoke()
-// }
-// function reMake() {
-//   canvasGraffiti.redo()
-// }
+function revoke() {
+  canvasGraffiti.revoke()
+}
+function reMake() {
+  canvasGraffiti.redo()
+}
 function checkMarker() {
   canvasGraffiti.setCurrentTool('Marker')
 }

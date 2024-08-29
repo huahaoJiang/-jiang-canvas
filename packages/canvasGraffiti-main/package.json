@@ -1,6 +1,6 @@
 {
   "name": "jianghh-canvas",
-  "version": "0.0.9",
+  "version": "0.1.0",
   "private": false,
   "description": "canvas画板，支持笔写、手写、鼠标流畅绘图，自动保存，撤销重做",
   "main": "lib/index.js",

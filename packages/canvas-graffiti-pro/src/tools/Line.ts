@@ -1,4 +1,4 @@
-import { ToolOptions } from "../types"
+import { ToolOptions } from '..'
 
 // 线
 export const Line = {
@@ -21,5 +21,5 @@ export const Line = {
       this.ctx.lineTo(this.endPoint.x, this.endPoint.y)
       this.ctx.stroke()
     }
-  },
+  }
 } as ToolOptions

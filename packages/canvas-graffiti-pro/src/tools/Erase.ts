@@ -1,6 +1,5 @@
-import { ToolOptions } from '../types'
-import { genRectByTwoPoint, isRectIntersect, Rect } from '../element'
-import type { CanvasGraffiti } from '../index'
+import { ToolOptions, CanvasGraffiti } from '..'
+import { genRectByTwoPoint, isRectIntersect, CustomRect } from '../element'
 // 橡皮擦
 export const Erase = {
   buffer: true,
@@ -44,7 +43,7 @@ export const Erase = {
   }
 } as ToolOptions
 
-function actionHandle(this: CanvasGraffiti, moveRect: Rect) {
+function actionHandle(this: CanvasGraffiti, moveRect: CustomRect) {
   // 筛除相交的元素数组
   let hasIntersect = false
   this.graffitiEleList.forEach(ele => {
@@ -53,7 +52,7 @@ function actionHandle(this: CanvasGraffiti, moveRect: Rect) {
         case 'Marker':
           let isIntersect = ele.points.some((point, index) => {
             const nextPoint = ele.points[index + 1] || null
-            let rect: Rect
+            let rect: CustomRect
             if (nextPoint) {
               rect = genRectByTwoPoint(point, nextPoint)
             } else {
@@ -80,6 +79,6 @@ function actionHandle(this: CanvasGraffiti, moveRect: Rect) {
   })
   if (hasIntersect) {
     this.clear()
-    this.draw()
+    this.drawEles()
   }
 }

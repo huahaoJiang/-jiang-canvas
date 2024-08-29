@@ -1,9 +1,10 @@
-import { roundToNDecimalPlaces } from '../utils'
-import { ToolType } from '../index'
-type IElement = Required<IElementOptions> & {}
-export type Point = { x: number; y: number }
+import { deepClone, roundToNDecimalPlaces } from '../utils'
+import { ToolType, Point } from '..'
+export * from './group'
 
-interface IElementOptions {
+export type IElement = Required<IElementOptions> & {}
+
+export interface IElementOptions {
   tool: ToolType
   left: number
   top: number
@@ -12,11 +13,12 @@ interface IElementOptions {
   points: Point[]
 }
 
-type OptionKey = keyof Omit<IElementOptions, 'tool' | 'points'>
+export type OptionKey = keyof Omit<IElementOptions, 'tool' | 'points'>
+
+export type CustomRect = { left: number; right: number; top: number; bottom: number }
 
 export class GraffitiEle implements IElement {
   tool: ToolType
-
   left: number
   top: number
   right: number
@@ -47,18 +49,21 @@ export class GraffitiEle implements IElement {
     this.bottom = roundToNDecimalPlaces(this.bottom + offsetY)
 
     this.points = this.points.map(point => {
-      return { ...point, x: roundToNDecimalPlaces(point.x + offsetX), y: roundToNDecimalPlaces(point.y + offsetY) }
+      return { x: roundToNDecimalPlaces(point.x + offsetX), y: roundToNDecimalPlaces(point.y + offsetY) }
     })
   }
+
+  // moveFinish() {
+  //   return deepClone(this)
+  // }
+
   deleteEle() {
     this.isDeleted = true
   }
 }
 
-export type Rect = { left: number; right: number; top: number; bottom: number }
-
 // 判断两个区域是否相交
-export function isRectIntersect(r1: Rect, r2: Rect) {
+export function isRectIntersect(r1: CustomRect, r2: CustomRect) {
   return !(r2.left > r1.right || r2.right < r1.left || r2.top > r1.bottom || r2.bottom < r1.top)
 }
 

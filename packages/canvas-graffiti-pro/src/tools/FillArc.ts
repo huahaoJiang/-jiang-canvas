@@ -1,4 +1,4 @@
-import { ToolOptions } from '../types'
+import { ToolOptions } from '..'
 import { Arc } from '.'
 // 线
 export const FillArc = {

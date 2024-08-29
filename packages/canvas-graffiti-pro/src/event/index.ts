@@ -1,3 +1,5 @@
+import CanvasGraffiti from '..'
+
 type Events = Record<string, ((...args: any) => void)[]>
 // 创建 Event Bus 类
 export type IEventBus = {
@@ -33,7 +35,7 @@ export class EventBus implements IEventBus {
     }
   }
 }
-export function useEventBus(vm: any) {
+export function useEventBus(vm: CanvasGraffiti) {
   const eventBus = new EventBus()
   vm.$on = eventBus.on.bind(eventBus)
   vm.$emit = eventBus.emit.bind(eventBus)

@@ -1,8 +1,5 @@
-import { SYSTEM_COLOR } from '../index'
-import { EleGroup } from '../element/group'
-import { genRectByTwoPoint, isRectIntersect, Rect } from '../element'
-import { ToolOptions } from '../types'
-import type { CanvasGraffiti } from '../index'
+import { genRectByTwoPoint, isRectIntersect, CustomRect, EleGroup } from '../element'
+import { ToolOptions, CanvasGraffiti, SYSTEM_COLOR } from '..'
 
 // 光标选择。交互操作，选中，拖动等操作实现
 export const Cursor = {
@@ -45,10 +42,12 @@ export const Cursor = {
     //有选中Group的情况下，动作结束
     if (this.eleGroup?.isSelected) {
       this.ctx.canvas.style.cursor = 'crosshair'
-      // this.eleGroup.moveFinish(this.beginPoint.x,  this.beginPoint.y)
+      this.eleGroup.moveFinish()
+      //记录当前动作，选择比较特殊，所以内部手动调用
+      this.emitStackChange()
     } else {
       // 无选中Group的情况下，动作结束
-      let moveRect: Rect
+      let moveRect: CustomRect
       if (!this.endPoint) {
         moveRect = {
           left: this.beginPoint.x - this.lineWidth,
@@ -66,14 +65,14 @@ export const Cursor = {
   }
 } as ToolOptions
 
-function actionHandle(this: CanvasGraffiti, moveRect: Rect) {
+function actionHandle(this: CanvasGraffiti, moveRect: CustomRect) {
   const eleList = this.graffitiEleList.filter(ele => {
     if (isRectIntersect(ele, moveRect)) {
       switch (ele.tool) {
         case 'Marker':
           return ele.points.some((point, index) => {
             const nextPoint = ele.points[index + 1] || null
-            let rect: Rect
+            let rect: CustomRect
             if (nextPoint) {
               rect = genRectByTwoPoint(point, nextPoint)
             } else {
@@ -99,7 +98,6 @@ function actionHandle(this: CanvasGraffiti, moveRect: Rect) {
     //在选中框外面，删除group内容，取消选中效果
     this.eleGroup.cancelSelected()
   }
-  console.log(this.graffitiEleList, 78)
 
   eleList.length && (this.eleGroup = new EleGroup(this, eleList).selected())
 }

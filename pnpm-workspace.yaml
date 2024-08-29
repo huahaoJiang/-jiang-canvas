@@ -3,3 +3,4 @@ packages:
   - 'packages/*'
   # all web page
   - 'pages/**'
+  - 'docs/**'

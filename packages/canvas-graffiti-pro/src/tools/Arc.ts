@@ -1,5 +1,5 @@
-import { ToolOptions } from '../types'
-import { GraffitiEle, Point } from '../element'
+import { ToolOptions, Point } from '..'
+import { GraffitiEle } from '../element'
 import { roundToNDecimalPlaces } from '../utils'
 
 // 圆形

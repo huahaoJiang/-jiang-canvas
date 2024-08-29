@@ -281,9 +281,11 @@ export class CanvasGraffiti implements ToolOptions {
 
   // 按下
   pointerdown(event: PointerEvent) {
-    if (!this.allowType.includes(event.pointerType)) return
+    // if (!this.allowType.includes(event.pointerType)) return
 
     if (event.pointerType === 'mouse' && !this.allowButton.includes(event.button)) return
+
+    if (event.pressure === 0) return
 
     this.beginPoint = { x: event.offsetX, y: event.offsetY }
 
@@ -307,7 +309,7 @@ export class CanvasGraffiti implements ToolOptions {
   // 移动
   pointermove(event: PointerEvent) {
     event.preventDefault()
-    if (!this.allowType.includes(event.pointerType)) return
+    // if (!this.allowType.includes(event.pointerType)) return
 
     this.tool?.pointermove?.call(this, event)
   }
@@ -316,7 +318,7 @@ export class CanvasGraffiti implements ToolOptions {
   pointerup(event: PointerEvent) {
     // this.el.style.touchAction = 'auto'
 
-    if (!this.allowType.includes(event.pointerType)) return
+    // if (!this.allowType.includes(event.pointerType)) return
 
     event.preventDefault()
 

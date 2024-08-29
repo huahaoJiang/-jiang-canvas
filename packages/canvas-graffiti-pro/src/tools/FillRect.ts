@@ -1,4 +1,4 @@
-import { ToolOptions } from '../types'
+import { ToolOptions } from '..'
 import { Rect } from '.'
 // 线
 export const FillRect = {

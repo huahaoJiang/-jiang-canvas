@@ -1,4 +1,4 @@
-import { ToolOptions } from '../types'
+import { ToolOptions } from '..'
 
 // 钢笔
 export const Pen = {

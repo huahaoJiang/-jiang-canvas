@@ -1,7 +1,5 @@
-import { Point } from './index'
+import { Point, SYSTEM_COLOR, CanvasGraffiti } from '..'
 import type { GraffitiEle } from './index'
-import { SYSTEM_COLOR, CanvasGraffiti } from '../index'
-import { roundToNDecimalPlaces } from '../utils'
 
 export class EleGroup {
   left: number
@@ -64,7 +62,7 @@ export class EleGroup {
   cancelSelected() {
     this.isSelected = false
     this.graffiti.clear()
-    this.graffiti.draw()
+    this.graffiti.drawEles()
     this.graffiti.eleGroup = null
     this.graffitiEles = null
   }
@@ -79,9 +77,15 @@ export class EleGroup {
       ele.moveEle(offsetX, offsetY)
     })
     this.graffiti.clear()
-    this.graffiti.draw()
+    this.graffiti.drawEles()
 
     this.selected()
+  }
+
+  moveFinish() {
+    // this.graffitiEles = this.graffitiEles.map(ele => {
+    //   return ele.moveFinish()
+    // })
   }
 
   deleteGroup() {

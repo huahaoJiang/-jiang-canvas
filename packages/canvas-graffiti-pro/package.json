@@ -1,8 +1,8 @@
 {
-  "name": "jianghh-canvas-pro",
-  "version": "0.0.1",
+  "name": "@jianghh/canvas-graffiti",
+  "version": "0.0.2",
   "private": false,
-  "description": "canvas涂鸦库，支持手、笔、鼠标的流畅高清书写，撤销重做操作。选中元素，移动、缩放、删除等功能。",
+  "description": "canvas涂鸦库，支持手、笔、鼠标的流畅高清书写，选中元素，并且移动、删除等功能。集成撤销重做操作。",
   "main": "lib/index.js",
   "module": "es/index.js",
   "types": "es/index.d.ts",
@@ -21,7 +21,7 @@
   },
   "keywords": [
     "@jianghh",
-    "@jianghh/canvas",
+    "@jianghh/canvas-graffiti",
     "canvas",
     "canvas-graffiti"
   ],
@@ -31,7 +31,6 @@
   ],
   "author": "jianghh",
   "license": "MIT",
-  "dependencies": {},
   "devDependencies": {
     "conventional-changelog-cli": "^2.2.2",
     "typescript": "^4.9.5",

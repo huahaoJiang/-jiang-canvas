@@ -1,57 +1,12 @@
 import * as tools from './tools'
-import { ToolOptions } from './types'
-import { useStack, CacheStack } from './stack'
+import { AllowType, EventTypes, Options, ToolOptions, ToolType } from './types'
+import { useStack, CacheStack, CacheGraffiti } from './stack'
 import { useEventBus, IEventBus } from './event'
 import { GraffitiEle } from './element'
-import { EleGroup } from './element/group'
+import type { EleGroup } from './element/group'
 export * from './types'
 
 export const SYSTEM_COLOR = '#1493ee'
-/**
- * 配置
- */
-export interface Options {
-  // canvas
-  el: string | HTMLCanvasElement
-
-  // 当前绘图工具
-  currentTool?: ToolType
-
-  // 创建离屏渲染画布样式
-  createBufferCanvasStyle?: { [prop: string]: any }
-
-  // 允许书写的方式
-  allowType?: AllowType[]
-
-  // 允许鼠标书写时，可以绘图的键 0：左键，1：中键，2：右键
-  allowButton?: (0 | 1 | 2)[]
-
-  // 动态初始化画布宽度
-  width?: number
-
-  // 动态初始化画布高度
-  height?: number
-
-  // 线的宽度
-  lineWidth?: number
-
-  // 画笔颜色
-  color?: string
-
-  // 画布容器的高度偏移量，容器高度 = height + containerHeightOffset
-  containerHeightOffset?: number
-
-  // 缓存图片数目，默认为5，建议不要太大
-  cacheSize?: number
-}
-
-// 事件名
-export type EventTypes = 'pointerdown' | 'pointermove' | 'pointerup'
-// 工具名
-export type ToolType = 'Cursor' | 'Marker' | 'Pen' | 'Line' | 'Rect' | 'Arc' | 'Erase'
-// 允许绘图的方式
-// eslint-disable-next-line @typescript-eslint/ban-types
-export type AllowType = 'mouse' | 'touch' | 'pen' | (string & {})
 
 export class CanvasGraffiti implements ToolOptions {
   options = {
@@ -96,18 +51,25 @@ export class CanvasGraffiti implements ToolOptions {
 
   containerHeightOffset: number = 0
 
+  // 设备分辨倍率
   dpr: number = 1
 
+  // 画布样式宽度
   width: number
 
+  // 画布样式高度
   height: number
 
+  // 元素组对象实例
   eleGroup: EleGroup | null
 
+  // 全局画笔粗细
   lineWidth: number
 
+  // 全局描边色
   strokeStyle: string
 
+  // 全局填充色
   fillStyle: string
 
   $on: IEventBus['on']
@@ -126,7 +88,6 @@ export class CanvasGraffiti implements ToolOptions {
 
   // 线宽
   setLineWidth(value: number) {
-    console.log(value, 29)
     this.ctx.lineWidth = value
   }
 
@@ -180,41 +141,6 @@ export class CanvasGraffiti implements ToolOptions {
     }
   ]
 
-  constructor(options: Options) {
-    Object.assign(this.options, options)
-    this.dpr = window.devicePixelRatio
-
-    if (typeof this.options.el === 'string') this.el = document.querySelector(this.options.el) as HTMLCanvasElement
-    else this.el = this.options.el
-
-    this.options.containerHeightOffset && (this.containerHeightOffset = this.options.containerHeightOffset)
-
-    if (this.options.width) {
-      this.el.style.width = this.options.width + 'px'
-      this.width = this.ctx.canvas.width = this.options.width * this.dpr
-    }
-
-    if (this.options.height) {
-      this.el.style.height = this.options.height - this.containerHeightOffset + 'px'
-      this.height = this.ctx.canvas.height = (this.options.height - this.containerHeightOffset) * this.dpr
-    }
-    this.ctx.scale(this.dpr, this.dpr)
-
-    this.options.lineWidth && (this.lineWidth = this.options.lineWidth)
-    this.options.color && (this.strokeStyle = this.fillStyle = this.options.color)
-
-    this.currentTool = this.options.currentTool!
-    this.allowType = this.options.allowType!
-    this.allowButton = this.options.allowButton!
-
-    this.ctx.canvas.style.cursor = 'crosshair'
-
-    useStack(this, options.cacheSize)
-    useEventBus(this)
-    this.init()
-    this.updateCtxState()
-  }
-
   // 上下文
   get ctx() {
     return this.el.getContext('2d')!
@@ -225,7 +151,45 @@ export class CanvasGraffiti implements ToolOptions {
     return this.bufferCanvas?.getContext('2d')
   }
 
-  private updateCtxState() {
+  setWidth(width: number) {
+    this.width = width
+    this.ctx.canvas.width = width * this.dpr
+    this.ctx.canvas.style.width = width + 'px'
+  }
+
+  setHeight(height: number) {
+    this.height = height
+    this.ctx.canvas.height = height * this.dpr
+    this.ctx.canvas.style.height = height + 'px'
+  }
+
+  constructor(options: Options) {
+    Object.assign(this.options, options)
+    this.dpr = options.devicePixelRatio || window.devicePixelRatio
+
+    if (typeof this.options.el === 'string') this.el = document.querySelector(this.options.el) as HTMLCanvasElement
+    else this.el = this.options.el
+
+    this.options.width ? this.setWidth(this.options.width) : this.setWidth(this.el.width)
+    this.options.height ? this.setHeight(this.options.height) : this.setHeight(this.el.height)
+
+    this.options.lineWidth && (this.lineWidth = this.options.lineWidth)
+    this.options.color && (this.strokeStyle = this.fillStyle = this.options.color)
+
+    this.currentTool = this.options.currentTool!
+    this.allowType = this.options.allowType!
+    this.allowButton = this.options.allowButton!
+
+    this.ctx.scale(this.dpr, this.dpr)
+    this.ctx.canvas.style.cursor = 'crosshair'
+
+    useStack(this, options.cacheSize)
+    useEventBus(this)
+    this.init()
+    this.reviseCtxState()
+  }
+
+  private reviseCtxState() {
     this.ctx.lineCap = 'round'
     this.ctx.lineJoin = 'round'
 
@@ -261,25 +225,14 @@ export class CanvasGraffiti implements ToolOptions {
     })
   }
 
-  // 改变画布高度，todo 修改缓存策略
-  updateHeight(containerHeight: number) {
-    if (!this.cacheStack.fresh) {
-      this.emitStackChange()
-    }
-
-    this.ctx.canvas.height = (containerHeight - this.containerHeightOffset) * this.dpr
-    this.ctx.canvas.style.height = containerHeight - this.containerHeightOffset + 'px'
-
-    this.reviewImg(this.cacheStack.fresh, true, () => {
-      this.updateCtxState()
-      this.ctx.scale(this.dpr, this.dpr)
-      this.emitStackChange()
-    })
-  }
-
   // 按下事件
   pointerdown(event: PointerEvent) {
-    if (!this.allowType.includes(event.pointerType)) return
+    //不包含触摸事件时兼容其他品牌的触控笔
+    if (!this.allowType.includes('touch') && event.pointerType === 'touch') {
+      if (event.pressure === 0) return
+    } else {
+      if (!this.allowType.includes(event.pointerType)) return
+    }
 
     if (event.pointerType === 'mouse' && !this.allowButton.includes(event.button)) return
 
@@ -291,8 +244,8 @@ export class CanvasGraffiti implements ToolOptions {
     if (this.tool.buffer) {
       this.createBufferCanvas()
     }
-    // todo 修改缓存策略
-    if (!this.cacheStack.fresh) {
+    // 当前内容存入栈
+    if (!this.cacheStack.preItem) {
       this.emitStackChange()
     }
 
@@ -321,7 +274,9 @@ export class CanvasGraffiti implements ToolOptions {
     this.tool?.pointerup?.call(this, event)
     this.removeEventListener(['pointermove', 'pointerup'])
 
-    this.emitStackChange()
+    if (this.currentTool !== 'Cursor') {
+      this.emitStackChange()
+    }
 
     this.beginPoint = { x: 0, y: 0 }
     this.endPoint = undefined
@@ -329,35 +284,71 @@ export class CanvasGraffiti implements ToolOptions {
     this.bufferCanvas?.remove()
   }
 
-  // 撤销操作
-  handleRevoke() {
-    this.clear()
-    this.graffitiEleList.pop()
-    this.draw()
-    // 撤销触发栈内容变化 todo, 重写栈逻辑
-    this.$emit('stackChange', this.cacheStack.fresh, this.cacheStack.size)
-  }
-  // revoke() {
-  //   const data = this.cacheStack.pop()
-  //   if (data !== null) {
-  //     this.reviewImg(data, false)
-  //   }
-  //   // 撤销触发栈内容变化
-  //   this.$emit('stackChange', this.cacheStack.fresh, this.cacheStack.size)
-  // }
+  // 改变画布宽高
+  updateCanvasSize(size: { width?: number; height?: number }) {
+    const { width, height } = size
+    if (!this.cacheStack.preItem) {
+      this.emitStackChange()
+    }
+    if (width) {
+      this.setWidth(width)
+    }
+    if (height) {
+      this.setHeight(height)
+    }
 
-  // 清空画布
+    this.$emit('sizeChange', { width: this.width, height: this.height })
+    this.reviseCtxState()
+    this.ctx.scale(this.dpr, this.dpr)
+    this.drawEles()
+    this.emitStackChange()
+  }
+
+  // 撤销
+  revoke() {
+    const data = this.cacheStack.pop()
+    if (data) {
+      this.canvasReview(data)
+    }
+    // 撤销触发栈内容变化
+    this.$emit('change', data, this.cacheStack.revokeSize, this.cacheStack.redoSize)
+    // 清除eleGroup
+    if (this.eleGroup) {
+      this.eleGroup = null
+    }
+  }
+  // 重做
+  redo() {
+    const data = this.cacheStack.popRedo()
+    if (data) {
+      this.canvasReview(data)
+    }
+    this.$emit('change', data, this.cacheStack.revokeSize, this.cacheStack.redoSize)
+    if (this.eleGroup) {
+      this.eleGroup = null
+    }
+  }
+
+  // 清除画布
   clear() {
     this.ctx.clearRect(0, 0, this.el.width, this.el.height)
   }
 
-  //todo 准备重写
   emitStackChange() {
-    this.cacheStack.push(this.toDataURL())
-    this.$emit('stackChange', this.cacheStack.fresh, this.cacheStack.size)
+    const data = {
+      graffitiEleList: this.graffitiEleList,
+      width: this.width,
+      height: this.height,
+      lineWidth: this.lineWidth,
+      fillStyle: this.fillStyle,
+      strokeStyle: this.strokeStyle,
+      dpr: this.dpr
+    }
+    this.cacheStack.push(data)
+    this.$emit('change', data, this.cacheStack.revokeSize, this.cacheStack.redoSize)
   }
 
-  draw(graffitiEleList?: GraffitiEle[]) {
+  drawEles(graffitiEleList?: GraffitiEle[]) {
     // 重绘graffitiEleList的内容
     if (graffitiEleList) {
       graffitiEleList.forEach(ele => {
@@ -372,33 +363,18 @@ export class CanvasGraffiti implements ToolOptions {
     }
   }
 
-  private reviewImg(imageData: string, ignoreHeight = true, callback?: () => void) {
-    const _this = this
-    if (!imageData) {
-      return
-    }
-
-    let backgroundImage = new Image()
-    backgroundImage.src = imageData
-
-    backgroundImage.onload = function () {
-      if (ignoreHeight) {
-        _this.clear()
-        _this.ctx.drawImage(backgroundImage, 0, 0, backgroundImage.width, backgroundImage.height)
-
-        callback && callback()
-      } else {
-        _this.ctx.canvas.height = backgroundImage.height
-        _this.ctx.canvas.style.height = backgroundImage.height / _this.dpr + 'px'
-        _this.el.parentElement.style.height = backgroundImage.height / _this.dpr + _this.containerHeightOffset + 'px'
-
-        _this.updateCtxState()
-        _this.ctx.drawImage(backgroundImage, 0, 0, backgroundImage.width, backgroundImage.height)
-        _this.ctx.scale(_this.dpr, _this.dpr)
-        callback && callback()
-      }
-
-      backgroundImage = null
+  //重写画布内容
+  canvasReview(graffiti: CacheGraffiti) {
+    this.clear()
+    graffiti.graffitiEleList.forEach(item => {
+      item.isDeleted = false
+    })
+    if (this.width !== graffiti.width || this.height !== graffiti.height) {
+      Object.assign(this, graffiti)
+      this.updateCanvasSize({ width: graffiti.width, height: graffiti.height })
+    } else {
+      Object.assign(this, graffiti)
+      this.drawEles()
     }
   }
 
@@ -448,11 +424,6 @@ export class CanvasGraffiti implements ToolOptions {
   }
 
   setCurrentTool(tool: ToolType) {
-    // if (tool === 'Cursor') {
-    //   this.el.style.touchAction = 'auto'
-    // } else {
-    //   this.el.style.touchAction = 'none'
-    // }
     if (this.eleGroup) {
       // 切换工具时，删除选中效果
       this.eleGroup.cancelSelected()

@@ -1,5 +1,5 @@
-import { ToolOptions } from '../types'
-import { genRectByTwoPoint, GraffitiEle, Point } from '../element'
+import { ToolOptions, Point } from '..'
+import { genRectByTwoPoint, GraffitiEle } from '../element'
 import { roundToNDecimalPlaces } from '../utils'
 
 // 矩形
