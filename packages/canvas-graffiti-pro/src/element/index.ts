@@ -1,4 +1,4 @@
-import { deepClone, roundToNDecimalPlaces } from '../utils'
+import { roundToNDecimalPlaces } from '../utils'
 import { ToolType, Point } from '..'
 export * from './group'
 

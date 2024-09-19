@@ -45,16 +45,19 @@ export interface Options {
   lineWidth?: number
 
   // 画笔颜色
-  color?: string
-
-  // 画布容器的高度偏移量，容器高度 = height + containerHeightOffset
-  containerHeightOffset?: number
+  color?: string | CanvasGradient | CanvasPattern
 
   // 缓存图片数目，默认为5，建议不要太大
   cacheSize?: number
 
   // 设备分辨倍率，影响清晰度
   devicePixelRatio?: number
+
+  // 阴影颜色
+  shadowColor?: string
+
+  // 阴影大小
+  shadowBlur?: number
 }
 
 // 事件名
@@ -64,4 +67,4 @@ export type ToolType = 'Cursor' | 'Marker' | 'Pen' | 'Line' | 'Rect' | 'Arc' | '
 // 允许绘图的方式
 export type AllowType = 'mouse' | 'touch' | 'pen' | (string & {})
 
-export type Point = { x: number; y: number }
+export type Point = { x: number; y: number; pressure?: number }

@@ -1,1 +1,1 @@
-export const OUTPUT_DIR = 'jhh-site'
+export const OUTPUT_DIR = 'jianghh'

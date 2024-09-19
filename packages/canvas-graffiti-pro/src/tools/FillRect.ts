@@ -1,5 +1,5 @@
 import { ToolOptions } from '..'
-import { Rect } from '.'
+import { Rect } from './Rect'
 // 线
 export const FillRect = {
   ...Rect,

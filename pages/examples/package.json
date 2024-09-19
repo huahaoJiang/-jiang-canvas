@@ -5,25 +5,30 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vue-tsc -b && vite build",
+    "build": "vite build",
     "preview": "vite preview",
     "lint:script": "eslint src --ext .vue,.js,.tsx,.ts --fix --quiet"
   },
   "dependencies": {
+    "@jianghh/canvas-graffiti": "workspace:^0.0.2",
     "@vueuse/core": "^10.11.0",
+    "dat.gui": "^0.7.9",
     "lodash.debounce": "^4.0.8",
     "lodash.throttle": "^4.1.1",
     "mockjs": "^1.1.0",
     "naive-ui": "^2.38.2",
     "pinia": "^2.1.7",
+    "three": "^0.168.0",
     "vue": "^3.4.29",
     "vue-router": "^4.4.0"
   },
   "devDependencies": {
     "@iconify-json/ant-design": "^1.1.16",
+    "@types/dat.gui": "^0.7.13",
     "@types/lodash.debounce": "^4.0.9",
     "@types/lodash.throttle": "^4.1.9",
     "@types/node": "^18.0.0",
+    "@types/three": "^0.168.0",
     "@typescript-eslint/eslint-plugin": "^7.14.1",
     "@typescript-eslint/parser": "^7.14.1",
     "@vitejs/plugin-vue": "^5.0.5",
@@ -45,7 +50,6 @@
     "vite": "^5.3.1",
     "vite-plugin-compression": "^0.5.1",
     "vite-plugin-html": "^3.2.2",
-    "vite-plugin-mock": "^3.0.2",
-    "vue-tsc": "^2.0.21"
+    "vite-plugin-mock": "^3.0.2"
   }
 }

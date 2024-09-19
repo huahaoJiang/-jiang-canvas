@@ -1,7 +1,7 @@
 import vue from '@vitejs/plugin-vue'
 import vueJsx from '@vitejs/plugin-vue-jsx'
 // rollup打包分析插件
-import visualizer from 'rollup-plugin-visualizer'
+// import visualizer from 'rollup-plugin-visualizer'
 /**
  * * unocss插件，原子css
  * https://github.com/antfu/unocss
@@ -39,16 +39,6 @@ export function createVitePlugins(viteEnv: any, isBuild: boolean) {
 
   if (viteEnv?.VITE_APP_USE_MOCK) {
     plugins.push(configMockPlugin(isBuild))
-  }
-
-  if (isBuild) {
-    plugins.push(
-      visualizer({
-        open: true,
-        gzipSize: true,
-        brotliSize: true
-      })
-    )
   }
 
   return plugins

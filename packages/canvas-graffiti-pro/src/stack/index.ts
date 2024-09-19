@@ -1,8 +1,8 @@
-import { deepClone } from '../utils'
+import type { IElementOptions } from '../element'
 import CanvasGraffiti from '..'
 
 export type CacheGraffiti = {
-  graffitiEleList: CanvasGraffiti['graffitiEleList']
+  eleInfoList: IElementOptions[]
   width: CanvasGraffiti['width']
   height: CanvasGraffiti['height']
   lineWidth: CanvasGraffiti['lineWidth']
@@ -50,7 +50,7 @@ export class CacheStack implements ICacheStack {
     // 预备入栈的item存在，往栈里推上一个item，错开入栈
     this.preItem && this.revokeList.push(this.preItem)
     // 当前item赋值给预备入栈的项
-    this.preItem = deepClone(item)
+    this.preItem = item
     this.redoList = []
   }
 
@@ -61,7 +61,7 @@ export class CacheStack implements ICacheStack {
     const item = this.revokeSize ? this.revokeList.pop() : null
     // 这时候的preItem是当前内容
     this.preItem = item
-    return deepClone(item)
+    return item
   }
 
   popRedo(): CacheGraffiti {
@@ -72,7 +72,7 @@ export class CacheStack implements ICacheStack {
       // 这时候的this.preItem是item的上一步内容
       this.revokeList.push(this.preItem)
       this.preItem = item
-      return deepClone(item)
+      return item
     } else {
       return null
     }

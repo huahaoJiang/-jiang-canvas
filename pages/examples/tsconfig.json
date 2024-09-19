@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "esnext",
     "useDefineForClassFields": true,
-    "module": "esnext",
+    "module": "ESNext",
     "noImplicitAny": true,
     "sourceMap": true,
     "esModuleInterop": true,
@@ -10,8 +10,8 @@
     "lib": ["esnext", "dom", "DOM.Iterable"],
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"],
-      "@utils/*": ["src/utils/*"]
+      "@/*": ["./src/*"],
+      "@utils/*": ["./src/utils/*"]
     },
     "typeRoots": ["node_modules/@types", "src/types/**"],
     "skipLibCheck": true,
@@ -35,6 +35,6 @@
     "noUnusedParameters": false,
     "noFallthroughCasesInSwitch": false
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue", "uno.config.ts"],
-  "exclude": ["node_modules", "site"]
+  "include": ["src"],
+  "exclude": ["node_modules", "jianghh"]
 }

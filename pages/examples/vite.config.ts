@@ -12,6 +12,7 @@ export default defineConfig(({ command, mode }) => {
   const viteEnv: Record<string, any> = wrapperEnv(env)
 
   const { VITE_PORT, VITE_PUBLIC_PATH, VITE_PROXY } = viteEnv
+
   return {
     root,
     css: {
@@ -26,7 +27,7 @@ export default defineConfig(({ command, mode }) => {
         '@': resolve(__dirname, './src'),
         '@utils': resolve(__dirname, './src/utils')
       },
-      extensions: ['.ts', '.vue', '.tsx', '.js', '.json']
+      extensions: ['.ts', '.vue', '.tsx', '.js', '.json', '.glb']
     },
     server: {
       host: '0.0.0.0',
@@ -34,7 +35,8 @@ export default defineConfig(({ command, mode }) => {
       proxy: createProxy(VITE_PROXY)
     },
     esbuild: {
-      drop: mode === 'production' ? ['console', 'debugger'] : []
+      // drop: mode === 'production' ? ['console', 'debugger'] : []
+      drop: mode === 'production' ? ['debugger'] : []
     },
     build: {
       target: 'es2015',

@@ -14,10 +14,15 @@ export class EleGroup {
   // ctx: CanvasRenderingContext2D
   graffitiEles: GraffitiEle[]
   eventFn: (event: KeyboardEvent) => void
+  isCdTime: number
+  offsetX: number
+  offsetY: number
 
   constructor(graffiti: CanvasGraffiti, graffitiEles: GraffitiEle[]) {
     this.graffiti = graffiti
     this.graffitiEles = graffitiEles
+    this.offsetX = 0
+    this.offsetY = 0
     graffitiEles.forEach((ele, index) => {
       if (index === 0) {
         this.left = ele.left
@@ -68,18 +73,26 @@ export class EleGroup {
   }
 
   moveGroup(offsetX: number, offsetY: number) {
-    this.left += offsetX
-    this.right += offsetX
-    this.top += offsetY
-    this.bottom += offsetY
-
+    const time = new Date().getTime()
+    this.offsetX += offsetX
+    this.offsetY += offsetY
+    if (this.isCdTime + 16 > time) {
+      return
+    }
+    this.isCdTime = time
+    this.left += this.offsetX
+    this.right += this.offsetX
+    this.top += this.offsetY
+    this.bottom += this.offsetY
     this.graffitiEles.forEach(ele => {
-      ele.moveEle(offsetX, offsetY)
+      ele.moveEle(this.offsetX, this.offsetY)
     })
     this.graffiti.clear()
     this.graffiti.drawEles()
 
     this.selected()
+    this.offsetX = 0
+    this.offsetY = 0
   }
 
   moveFinish() {
@@ -93,14 +106,18 @@ export class EleGroup {
       ele.deleteEle()
     })
 
-    this.cancelSelected()
     document.removeEventListener('keydown', this.eventFn)
+    this.graffiti.$emit('group', null)
+
+    this.cancelSelected()
+    this.graffiti.emitStackChange()
   }
 
   private bindKeyEvent() {
     this.eventFn = (event: KeyboardEvent) => {
       if (this.isSelected) {
-        if (event.key === 'Delete' || event.key === 'Del') {
+        event.preventDefault()
+        if (event.key === 'Backspace' || event.key === 'Delete') {
           this.deleteGroup()
         }
       }

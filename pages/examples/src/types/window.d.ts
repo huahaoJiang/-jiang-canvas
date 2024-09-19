@@ -6,6 +6,7 @@ declare global {
   const $notification: (typeof import('naive-ui'))['NNotificationProvider']
   const $message: Message
   const $dialog: (typeof import('naive-ui'))['NDialogProvider']
+  const VConsole: any
 }
 
 export {}

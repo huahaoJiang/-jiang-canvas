@@ -33,20 +33,20 @@ const menuOptions: MenuOption[] = [
       {
         label: '涂鸦库',
         key: 'CanvasGraffiti'
+      },
+      {
+        label: '粒子动画',
+        key: 'CanvasParticle'
       }
     ]
   },
   {
-    label: 'Canvas动画',
-    key: 'animation',
+    label: 'ThreeJs学习',
+    key: 'three',
     children: [
       {
-        label: '粒子动画',
-        key: 'CanvasParticle'
-      },
-      {
-        label: '开屏动画',
-        key: 'dd'
+        label: '第一章',
+        key: 'ThreePage_1'
       }
     ]
   }

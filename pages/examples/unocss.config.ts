@@ -10,7 +10,7 @@ export default defineConfig({
   ],
   rules: [
     [/^bc-(.+)$/, ([, color]) => ({ 'border-color': `#${color}` })],
-    ['card-shadow', { 'box-shadow': '0px, 6px rgba(0, 0, 0, 0.05)' }],
+    ['card-shadow', { 'box-shadow': ' 0 2px 8px 0px rgba(0, 0, 0, 0.16)' }],
     ['linear', { transition: 'all .15s linear' }],
     ['cursor', { cursor: 'pointer' }],
     ['u-flex', { display: 'flex' }]

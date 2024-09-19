@@ -1,3 +1,4 @@
+import Display from '@/layout/display.vue'
 import Layout from '@/layout/index.vue'
 
 export const basicRoutes: Jianghh.IRoute[] = [
@@ -5,7 +6,7 @@ export const basicRoutes: Jianghh.IRoute[] = [
     name: 'Layout',
     path: '/',
     component: Layout,
-    redirect: '/desk',
+    redirect: '/graffiti',
     children: [
       {
         name: 'Desk',
@@ -46,7 +47,7 @@ export const basicRoutes: Jianghh.IRoute[] = [
       {
         name: 'CanvasGraffiti',
         path: 'graffiti',
-        component: () => import('@/views/demo/canvas/graffiti.vue'),
+        component: () => import('@/views/demo/canvas/graffiti/index.vue'),
         meta: {
           title: '涂鸦画板',
           icon: 'mdi:alert-circle-outline',
@@ -59,6 +60,34 @@ export const basicRoutes: Jianghh.IRoute[] = [
         component: () => import('@/views/demo/canvas/particle/index.vue'),
         meta: {
           title: '粒子动画',
+          icon: 'mdi:alert-circle-outline',
+          keepAlive: true
+        }
+      },
+      {
+        name: 'ThreePage_1',
+        path: 'three_page_1',
+        component: () => import('@/views/demo/three/pages/robot.vue'),
+        meta: {
+          title: '第一章',
+          icon: 'mdi:alert-circle-outline',
+          keepAlive: true
+        }
+      }
+    ]
+  },
+  {
+    name: 'Display',
+    path: '/display',
+    component: Display,
+    redirect: '/graffiti',
+    children: [
+      {
+        name: 'DisplayCanvasGraffiti',
+        path: 'graffiti',
+        component: () => import('@/views/demo/canvas/graffiti/index.vue'),
+        meta: {
+          title: '涂鸦画板',
           icon: 'mdi:alert-circle-outline',
           keepAlive: true
         }

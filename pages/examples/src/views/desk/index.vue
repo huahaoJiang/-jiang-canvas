@@ -1,4 +1,7 @@
 <template>
+  <div></div>
+</template>
+<!-- <template>
   <div id="card">
     <div
       ref="pCanvas"
@@ -153,4 +156,4 @@ function checkArc() {
 .erase-cursor {
   cursor: url('@/assets/images/erase.png'), auto;
 }
-</style>
+</style> -->

@@ -9,7 +9,7 @@ export const Erase = {
     this.bufferCtx.lineJoin = 'round'
     this.bufferCtx.lineWidth = 4
     this.bufferCtx.strokeStyle = this.fillStyle
-    this.bufferCtx.shadowColor = this.fillStyle
+    this.bufferCtx.shadowColor = this.shadowColor
     this.bufferCtx.shadowBlur = 6
 
     actionHandle.call(this, {
@@ -48,32 +48,28 @@ function actionHandle(this: CanvasGraffiti, moveRect: CustomRect) {
   let hasIntersect = false
   this.graffitiEleList.forEach(ele => {
     if (isRectIntersect(ele, moveRect)) {
-      switch (ele.tool) {
-        case 'Marker':
-          let isIntersect = ele.points.some((point, index) => {
-            const nextPoint = ele.points[index + 1] || null
-            let rect: CustomRect
-            if (nextPoint) {
-              rect = genRectByTwoPoint(point, nextPoint)
-            } else {
-              rect = {
-                left: point.x - this.lineWidth,
-                top: point.y - this.lineWidth,
-                right: point.x + this.lineWidth,
-                bottom: point.y + this.lineWidth
-              }
+      if (['Marker', 'Pen'].includes(ele.tool)) {
+        let isIntersect = ele.points.some((point, index) => {
+          const nextPoint = ele.points[index + 1] || null
+          let rect: CustomRect
+          if (nextPoint) {
+            rect = genRectByTwoPoint(point, nextPoint)
+          } else {
+            rect = {
+              left: point.x - this.lineWidth,
+              top: point.y - this.lineWidth,
+              right: point.x + this.lineWidth,
+              bottom: point.y + this.lineWidth
             }
-            if (isRectIntersect(rect, moveRect)) {
-              return true
-            }
-          })
-          if (isIntersect) {
-            hasIntersect = true
-            ele.deleteEle()
           }
-          break
-        default:
-          break
+          if (isRectIntersect(rect, moveRect)) {
+            return true
+          }
+        })
+        if (isIntersect) {
+          hasIntersect = true
+          ele.deleteEle()
+        }
       }
     }
   })
