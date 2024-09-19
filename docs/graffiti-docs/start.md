@@ -16,4 +16,41 @@ $ pnpm add @jianghh/canvas-graffiti
 
 ## 使用
 
-见例子
+通过绑定canvas元素创建一个CanvasGraffiti对象的实例。
+
+```html
+<template>
+  <canvas id="graffiti" />
+</template>
+```
+
+```ts
+import { CanvasGraffiti } from '@jianghh/canvas-graffiti'
+
+const canvasGraffiti = new CanvasGraffiti({
+  el: '#graffiti',
+  width: 1000,
+  height: 400
+})
+```
+
+这里宽高如果不设定的话就是默认的宽度300px，高度150px。
+
+当然也可以像下面这样写。:wink:
+
+```html
+<template>
+  <canvas
+    id="graffiti"
+    width="1000"
+    height="400" />
+</template>
+```
+
+```ts
+import { CanvasGraffiti } from '@jianghh/canvas-graffiti'
+
+const canvasGraffiti = new CanvasGraffiti({
+  el: '#graffiti'
+})
+```
