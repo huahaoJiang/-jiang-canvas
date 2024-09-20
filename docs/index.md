@@ -4,7 +4,7 @@ layout: home
 hero:
   name: Jiang hh
   image:
-    src: /public/panda.png
+    src: /panda.png
     alt: jianghh
   tagline: 我的个人文档站点
   actions:

@@ -5,7 +5,7 @@ export default defineConfig({
   base: '/docs/',
   title: '姜戈',
   titleTemplate: '姜戈',
-  head: [['link', { rel: 'icon', href: '/public/j.svg' }]],
+  head: [['link', { rel: 'icon', href: '/j.svg' }]],
   appearance: true,
   lastUpdated: true,
   themeConfig: {
