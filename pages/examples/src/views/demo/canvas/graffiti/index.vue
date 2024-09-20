@@ -60,13 +60,13 @@
   </div>
 </template>
 <script lang="ts" setup>
-// import type { EleGroup } from '@jianghh/canvas-graffiti'
-// import { CanvasGraffiti } from '@jianghh/canvas-graffiti'
+import type { EleGroup } from '@jianghh/canvas-graffiti'
+import { CanvasGraffiti } from '@jianghh/canvas-graffiti'
 import debounce from 'lodash.debounce'
 import throttle from 'lodash.throttle'
 
-import type { EleGroup } from '/jhh_project/canvasPro/packages/canvas-graffiti-pro/src/element/index'
-import { CanvasGraffiti } from '/jhh_project/canvasPro/packages/canvas-graffiti-pro/src/index'
+// import type { EleGroup } from '/jhh_project/canvasPro/packages/canvas-graffiti-pro/src/element/index'
+// import { CanvasGraffiti } from '/jhh_project/canvasPro/packages/canvas-graffiti-pro/src/index'
 
 import { CANVAS_STATE } from './utils'
 import { ToolType } from '@jianghh/canvas-graffiti'
@@ -205,15 +205,18 @@ function reMake() {
 }
 
 function clearAndReplay() {
+  initialData = null
+  window.localStorage.setItem('canvas_content', '')
   canvasGraffiti.clear()
   canvasGraffiti.destroy()
-  window.localStorage.setItem('canvas_content', '')
   init()
 }
+
 function deleteGroup() {
   canvasGraffiti.eleGroup?.deleteGroup()
   showMenu.value = false
 }
+
 function exportContent() {
   // 导出内容，做一个弹框
 }

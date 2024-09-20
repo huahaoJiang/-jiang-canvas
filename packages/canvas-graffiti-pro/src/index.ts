@@ -421,6 +421,7 @@ export class CanvasGraffiti implements ToolOptions {
     } else {
       Object.assign(this, graffiti)
       this.ctx.scale(this.dpr, this.dpr)
+      this.#reviseCtxState()
       this.drawEles()
     }
   }

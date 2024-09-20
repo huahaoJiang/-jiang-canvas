@@ -35,8 +35,7 @@ export default defineConfig(({ command, mode }) => {
       proxy: createProxy(VITE_PROXY)
     },
     esbuild: {
-      // drop: mode === 'production' ? ['console', 'debugger'] : []
-      drop: mode === 'production' ? ['debugger'] : []
+      drop: mode === 'production' ? ['console', 'debugger'] : []
     },
     build: {
       target: 'es2015',
