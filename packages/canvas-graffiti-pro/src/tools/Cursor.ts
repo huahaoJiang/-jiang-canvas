@@ -23,11 +23,12 @@ export const Cursor = {
       this.beginPoint = { x, y }
     }
   },
-  pointermove({ offsetX: x, offsetY: y }) {
+  pointermove(event: PointerEvent) {
+    const { offsetX: x, offsetY: y } = event
     // Group内事件，移动、缩放
     if (this.eleGroup?.isSelected) {
       this.eleGroup.moveGroup(x - this.beginPoint.x, y - this.beginPoint.y)
-      this.$emit('groupMove')
+      this.customizeHandle?.onGroupMoveHandle?.call(this, event)
       this.beginPoint = { x, y }
     } else {
       // Group外事件，重新框选范围
@@ -43,7 +44,7 @@ export const Cursor = {
     //有选中Group的情况下，动作结束
     if (this.eleGroup?.isSelected) {
       this.ctx.canvas.style.cursor = 'crosshair'
-      this.$emit('group', this.eleGroup)
+      this.customizeHandle?.onGroupHandle?.call(this, this.eleGroup)
       this.eleGroup.moveFinish()
       //记录当前动作，选择比较特殊，所以内部手动调用
       this.emitStackChange()
@@ -63,7 +64,7 @@ export const Cursor = {
 
       //创建新的group
       actionHandle.call(this, moveRect)
-      this.$emit('group', this.eleGroup)
+      this.customizeHandle?.onGroupHandle?.call(this, this.eleGroup)
     }
   }
 } as ToolOptions

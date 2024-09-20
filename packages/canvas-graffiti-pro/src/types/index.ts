@@ -1,4 +1,5 @@
-import type { CanvasGraffiti } from '../'
+import type { CacheGraffiti, CanvasGraffiti } from '../'
+import { EleGroup } from '../'
 
 // 工具类配置
 export interface ToolOptions {
@@ -24,7 +25,7 @@ export interface Options {
   el: string | HTMLCanvasElement
 
   // 当前绘图工具
-  currentTool?: ToolType
+  initialTool?: ToolType
 
   // 创建离屏渲染画布样式
   createBufferCanvasStyle?: { [prop: string]: any }
@@ -58,6 +59,15 @@ export interface Options {
 
   // 阴影大小
   shadowBlur?: number
+}
+
+export interface CustomizeHandle {
+  // 涂鸦，擦除，改变宽高等动作发生后的回调
+  onActionHandle?: (item: CacheGraffiti, revokeSize: number, redoSize: number) => void
+  // Group选中状态下移动时的回调
+  onGroupMoveHandle?: (event: PointerEvent) => void
+  // Group创建或者被销毁时的回调
+  onGroupHandle?: (group: EleGroup) => void
 }
 
 // 事件名

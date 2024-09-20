@@ -84,8 +84,3 @@ export class CacheStack implements ICacheStack {
     this.preItem = null
   }
 }
-
-export function useStack(vm: CanvasGraffiti, maxSize = 5) {
-  const stack = new CacheStack(maxSize)
-  vm.cacheStack = stack
-}

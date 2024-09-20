@@ -1,18 +1,18 @@
 import { tools } from './tools'
-import { AllowType, EventTypes, Options, Point, ToolOptions, ToolType } from './types'
-import { useStack, CacheStack, CacheGraffiti } from './stack'
-import { useEventBus, IEventBus } from './event'
+import { AllowType, CustomizeHandle, EventTypes, Options, Point, ToolOptions, ToolType } from './types'
+import { CacheStack, CacheGraffiti } from './stack'
 import { GraffitiEle } from './element'
 import type { EleGroup } from './element/group'
 import { GraffitiPlugin } from './plugin'
 export * from './types'
 export * from './element'
+export * from './stack'
 
 export const SYSTEM_COLOR = '#1493ee'
 
 export class CanvasGraffiti implements ToolOptions {
   options = {
-    currentTool: 'Marker',
+    initialTool: 'Marker',
     createBufferCanvasStyle: {},
     allowType: ['pen', 'mouse', 'touch'],
     allowButton: [0],
@@ -21,44 +21,36 @@ export class CanvasGraffiti implements ToolOptions {
     lineWidth: 2,
     color: '#333'
   } as Options
-
+  customizeHandle: CustomizeHandle
   // canvas 容器
   el: HTMLCanvasElement
 
-  // 当前是否可撤销
-  isRevoke: boolean = false
-
   // 存储栈
-  cacheStack: CacheStack
+  private cacheStack: CacheStack
 
-  // 起点
   beginPoint: { x: number; y: number } = { x: 0, y: 0 }
 
-  // 终点
   endPoint: { x: number; y: number } | undefined
 
-  // 移动轨迹
   points: Point[] = []
 
   // 工具名
-  private currentTool: ToolType & string = 'Marker'
+  #toolName: ToolType
 
   // 离屏渲染画布
   bufferCanvas: HTMLCanvasElement | undefined
 
   // 允许绘图方式
-  allowType!: AllowType[]
+  private allowType!: AllowType[]
 
   // 鼠标允许绘图方式
-  allowButton!: (0 | 1 | 2 | number)[]
+  private allowButton!: (0 | 1 | 2 | number)[]
 
   // 涂鸦元素数组
   graffitiEleList: GraffitiEle[] = []
 
-  containerHeightOffset: number = 0
-
   // 设备分辨倍率
-  dpr: number = 1
+  #dpr: number = 1
 
   // 画布样式宽度
   #width: number
@@ -83,12 +75,6 @@ export class CanvasGraffiti implements ToolOptions {
 
   // 阴影范围大小
   shadowBlur: number
-
-  $on: IEventBus['on']
-
-  $emit: IEventBus['emit']
-
-  $off: IEventBus['off']
 
   get width() {
     return this.#width
@@ -116,6 +102,13 @@ export class CanvasGraffiti implements ToolOptions {
     return this.#lineWidth
   }
 
+  private set dpr(val: number) {
+    this.#dpr = val
+  }
+  get dpr() {
+    return this.#dpr
+  }
+
   set strokeStyle(val: string | CanvasGradient | CanvasPattern) {
     this.#strokeStyle = val
     this.ctx.strokeStyle = val
@@ -141,11 +134,19 @@ export class CanvasGraffiti implements ToolOptions {
   }
 
   // 当前工具
-  get tool() {
-    return tools[this.currentTool]
+  private get tool(): ToolOptions {
+    return tools[this.#toolName]
   }
-  private set tool(value: any) {
-    this.currentTool = value
+  set toolName(value: ToolType) {
+    if (this.eleGroup) {
+      // 切换工具时，删除选中效果
+      this.eleGroup.cancelSelected()
+      this.customizeHandle?.onGroupHandle?.call(this, this.eleGroup)
+    }
+    this.#toolName = value
+  }
+  get toolName() {
+    return this.#toolName
   }
 
   // 上下文
@@ -158,12 +159,9 @@ export class CanvasGraffiti implements ToolOptions {
     return this.bufferCanvas?.getContext('2d')
   }
 
-  updateAllowType(types: AllowType[]) {
-    this.allowType = types
-  }
-
-  constructor(options: Options) {
+  constructor(options: Options, customizeHandle?: CustomizeHandle) {
     Object.assign(this.options, options)
+    customizeHandle && (this.customizeHandle = customizeHandle)
     this.dpr = options.devicePixelRatio || window.devicePixelRatio
 
     if (typeof this.options.el === 'string') this.el = document.querySelector(this.options.el) as HTMLCanvasElement
@@ -180,15 +178,14 @@ export class CanvasGraffiti implements ToolOptions {
       this.shadowColor = this.options.shadowColor
     }
 
-    this.currentTool = this.options.currentTool!
+    this.toolName = this.options.initialTool!
     this.allowType = this.options.allowType!
     this.allowButton = this.options.allowButton!
 
     this.ctx.scale(this.dpr, this.dpr)
     this.ctx.canvas.style.cursor = 'crosshair'
 
-    useStack(this, options.cacheSize)
-    useEventBus(this)
+    this.cacheStack = new CacheStack(options.cacheSize || 5)
     this.init()
     this.#reviseCtxState()
   }
@@ -196,8 +193,8 @@ export class CanvasGraffiti implements ToolOptions {
   #reviseCtxState() {
     this.ctx.lineCap = 'round'
     this.ctx.lineJoin = 'round'
-    this.ctx.imageSmoothingQuality = 'medium'
-    // this.ctx.imageSmoothingEnabled = true
+    // this.ctx.imageSmoothingQuality = 'medium'
+    this.ctx.imageSmoothingEnabled = true
 
     this.fillStyle = this.#fillStyle
     this.strokeStyle = this.#strokeStyle
@@ -208,7 +205,7 @@ export class CanvasGraffiti implements ToolOptions {
   /**
    * 初始化
    */
-  init() {
+  private init() {
     this.el.style.touchAction = 'none'
     // 绑定 this
     this.pointerdown = this.pointerdown.bind(this)
@@ -217,6 +214,10 @@ export class CanvasGraffiti implements ToolOptions {
 
     // 绑定事件
     this.bindCanvasEventListener()
+  }
+
+  updateAllowType(types: AllowType[]) {
+    this.allowType = types
   }
 
   plugin(...args: GraffitiPlugin[]) {
@@ -231,12 +232,12 @@ export class CanvasGraffiti implements ToolOptions {
   }
 
   // 绑定事件
-  bindCanvasEventListener() {
+  private bindCanvasEventListener() {
     this.el.addEventListener('pointerdown', this.pointerdown)
   }
 
   // 解绑事件
-  removeEventListener(types: EventTypes[] = ['pointerdown', 'pointermove', 'pointerup']) {
+  private removeEventListener(types: EventTypes[] = ['pointerdown', 'pointermove', 'pointerup']) {
     types.forEach(i => {
       this.el.removeEventListener(i, this[i])
       document.removeEventListener(i, this[i])
@@ -280,7 +281,7 @@ export class CanvasGraffiti implements ToolOptions {
     } else {
       if (!this.allowType.includes(event.pointerType)) return
     }
-    this.$emit('debug', event.pressure)
+    // this.$emit('debug', event.pressure)
     event.preventDefault()
 
     this.tool?.pointermove?.call(this, event)
@@ -299,7 +300,7 @@ export class CanvasGraffiti implements ToolOptions {
     this.tool?.pointerup?.call(this, event)
     this.removeEventListener(['pointermove', 'pointerup'])
 
-    if (this.currentTool !== 'Cursor') {
+    if (this.toolName !== 'Cursor') {
       this.emitStackChange()
     }
 
@@ -316,11 +317,11 @@ export class CanvasGraffiti implements ToolOptions {
       this.setCanvasData(data)
     }
     // 撤销触发栈内容变化
-    this.$emit('change', data, this.cacheStack.revokeSize, this.cacheStack.redoSize)
+    this.customizeHandle?.onActionHandle?.call(this, data, this.cacheStack.revokeSize, this.cacheStack.redoSize)
     // 清除eleGroup
     if (this.eleGroup) {
       this.eleGroup = null
-      this.$emit('group')
+      this.customizeHandle?.onGroupHandle?.call(this, null)
     }
   }
   // 重做
@@ -329,10 +330,10 @@ export class CanvasGraffiti implements ToolOptions {
     if (data) {
       this.setCanvasData(data)
     }
-    this.$emit('change', data, this.cacheStack.revokeSize, this.cacheStack.redoSize)
+    this.customizeHandle?.onActionHandle?.call(this, data, this.cacheStack.revokeSize, this.cacheStack.redoSize)
     if (this.eleGroup) {
       this.eleGroup = null
-      this.$emit('group')
+      this.customizeHandle?.onGroupHandle?.call(this, null)
     }
   }
 
@@ -344,7 +345,7 @@ export class CanvasGraffiti implements ToolOptions {
     }
     width && (this.width = width)
     height && (this.height = height)
-    this.$emit('sizeChange', { width: this.width, height: this.height })
+    // this.$emit('sizeChange', { width: this.width, height: this.height })
     this.#reviseCtxState()
     this.ctx.scale(this.dpr, this.dpr)
     this.drawEles()
@@ -355,18 +356,26 @@ export class CanvasGraffiti implements ToolOptions {
     this.emitStackChange()
   }
 
-  // 清除画布
-  clear() {
+  // 清空画布
+  flush() {
     this.ctx.clearRect(0, 0, this.el.width, this.el.height)
+  }
+
+  // 清除画布，同时删除内部元素
+  clear() {
+    this.flush()
+    this.graffitiEleList = []
+    this.eleGroup = null
   }
 
   emitStackChange() {
     const data = this.getCanvasData()
     this.cacheStack.push(data)
 
-    this.$emit('change', data, this.cacheStack.revokeSize, this.cacheStack.redoSize)
+    this.customizeHandle?.onActionHandle?.call(this, data, this.cacheStack.revokeSize, this.cacheStack.redoSize)
   }
 
+  // 绘制ele元素数据
   drawEles(graffitiEleList?: GraffitiEle[]) {
     // 重绘graffitiEleList的内容
     if (graffitiEleList) {
@@ -400,17 +409,18 @@ export class CanvasGraffiti implements ToolOptions {
 
   //重写画布内容
   setCanvasData(graffiti: CacheGraffiti) {
-    this.clear()
+    this.flush()
     this.graffitiEleList = graffiti.eleInfoList.map(item => {
       return new GraffitiEle(item)
     })
-    graffiti.eleInfoList = null
+    // graffiti.eleInfoList = null
 
     if (this.width !== graffiti.width || this.height !== graffiti.height) {
       Object.assign(this, graffiti)
       this.#updateSize({ width: graffiti.width, height: graffiti.height })
     } else {
       Object.assign(this, graffiti)
+      this.ctx.scale(this.dpr, this.dpr)
       this.drawEles()
     }
   }
@@ -443,8 +453,9 @@ export class CanvasGraffiti implements ToolOptions {
   destroy(isRemoveCanvas?: boolean) {
     this.removeEventListener()
     this.cacheStack.clear()
-    this.eleGroup = null
-    this.graffitiEleList = null
+    this.clear()
+    this.options = null
+    this.customizeHandle = null
     if (isRemoveCanvas) this.el.remove()
   }
 
@@ -454,21 +465,12 @@ export class CanvasGraffiti implements ToolOptions {
   }
 
   // 获取 canvas 的图片文件
-  toPicFile(filename = '0.png'): Promise<File> {
+  toPicFile(filename = 'canvas.png'): Promise<File> {
     return new Promise(res => {
       this.el.toBlob(blob => {
         blob && res(new File([blob], filename))
       })
     })
-  }
-
-  setCurrentTool(tool: ToolType) {
-    if (this.eleGroup) {
-      // 切换工具时，删除选中效果
-      this.eleGroup.cancelSelected()
-      this.$emit('group')
-    }
-    this.currentTool = tool
   }
 }
 

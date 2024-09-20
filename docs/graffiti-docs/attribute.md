@@ -1,101 +1,78 @@
 ---
-outline: deep
+outline: 2
 ---
+# 实例属性
 
-# 构造函数
+实例对象可以访问的属性
 
-通过new CanvasGraffiti()调用构造函数创建实例对象
+## ctx
+你可以获取到当前canvas对象的上下文对象
+### 支持程度
+- 可读：:white_check_mark:
+- 可写：:x:
 
-## 参数
+## width
+你可以获取到canvas的宽度
+### 支持程度
+- 可读：:white_check_mark:
+- 可写：:x:
 
-### el：string | HTMLCanvasElement
+## height
+你可以获取到canvas的高度
+### 支持程度
+- 可读：:white_check_mark:
+- 可写：:x:
 
-你可以通过传入一个 **#Id名称** 或者一个HTMLCanvasElement对象来绑定dom。
-::: tip
-该属性必传
-:::
+## graffitiEleList
+你可以获取到内容中的元素对象数组
+### 支持程度
+- 可读：:white_check_mark:
+- 可写：:x:
 
-### currentTool：ToolType
+## dpr
+你可以获取到当前画布的设备物理像素分辨率与CSS 像素分辨率之比。
+### 支持程度
+- 可读：:white_check_mark:
+- 可写：:x:
 
-```ts
-type ToolType = 'Cursor' | 'Marker' | 'Pen' | 'Line' | 'Rect' | 'Arc' | 'Erase'
-```
+## eleGroup
+你可以获取到画布中当前选中的元素对象组。
+### 支持程度
+- 可读：:white_check_mark:
+- 可写：:x:
 
-你可以通过传入ToolType类型的值设置当前的工具类型。比如，Cursor是光标选择工具。
-::: tip
-默认选中Marker
-:::
+## shadowColor
+你可以获取到画布全局的阴影颜色属性。
+### 支持程度
+- 可读：:white_check_mark:
+- 可写：:white_check_mark:
 
-### allowType：AllowType[]
+## shadowBlur
+你可以获取到画布全局的阴影大小属性。
+### 支持程度
+- 可读：:white_check_mark:
+- 可写：:white_check_mark:
 
-```ts
-type AllowType = 'mouse' | 'touch' | 'pen'
-```
+## lineWidth
+你可以获取到画布全局的画笔粗细属性。
+### 支持程度
+- 可读：:white_check_mark:
+- 可写：:white_check_mark:
 
-你可以通过传入AllowType类型的数组，控制允许书写的方式。
-::: tip
-默认全部允许
-:::
+## strokeStyle
+你可以获取到画布全局的描边颜色属性。
+### 支持程度
+- 可读：:white_check_mark:
+- 可写：:white_check_mark:
 
-### allowButton：(0 | 1 | 2)[]
+## fillStyle
+你可以获取到画布全局的填充颜色属性。
+### 支持程度
+- 可读：:white_check_mark:
+- 可写：:white_check_mark:
 
-你可以定义允许绘图的键 0：左键，1：中键，2：右键。
-::: warning
-该属性默认只允许左键，并且在allowType允许鼠标书写时才会生效
-:::
-
-### width：number
-
-你可以定义画布的初始宽度。
-::: tip
-默认为300px
-:::
-
-### height：number
-
-你可以定义画布的初始高度。
-::: tip
-默认为150px
-:::
-
-### lineWidth：number
-
-你可以定义画笔的宽度。
-::: tip
-默认为2px
-:::
-
-### color：string | CanvasGradient | CanvasPattern
-
-你可以定义画笔的颜色。
-::: tip
-默认为#333
-:::
-
-### cacheSize：number
-
-你可以定义缓存的操作步数大小，通常不建议太大，会对内存造成消耗。
-::: tip
-默认缓存之前的5步操作
-:::
-
-### devicePixelRatio：number
-
-你可以定义设备的物理像素分辨率与CSS 像素分辨率之比，一般不需要调整，如有需要可手动调整。
-::: tip
-默认取当前设备的devicePixelRatio值
-:::
-
-### shadowBlur：number
-
-你可以定义画笔阴影的大小
-::: tip
-默认设置为 0
-:::
-
-### shadowColor：string
-
-你可以定义画笔阴影的颜色
-::: warning
-该属性默认设置为 'rgba(1,1,1,0.6)'，并且需要shadowBlur属性不为 0 才能生效
-:::
+## toolName
+你可以获取到当前工具名称。
+### 支持程度
+- 可读：:white_check_mark:
+- 可写：:white_check_mark:

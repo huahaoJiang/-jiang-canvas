@@ -1,6 +1,6 @@
-# 什么是 @jianghh/canvas-graffiti ？
+# 什么是canvas graffiti ？
 
-[@jianghh/canvas-graffiti](https://www.npmjs.com/package/@jianghh/canvas-graffiti) 是一个基于canvas的涂鸦库，仅支持浏览器环境。
+涂鸦库 [@jianghh/canvas-graffiti](https://www.npmjs.com/package/@jianghh/canvas-graffiti) 是一个基于canvas的涂鸦库，仅支持浏览器环境。
 该项目提供创建一个可以修改宽高的画板，它灵活支持手写、笔写和鼠标书写，笔写方面也兼容了各种品牌的触控笔。
 
 ## 诞生背景
@@ -18,10 +18,11 @@
 - 支持画布清晰度调整
 - 支持画板宽高修改，内部存储与复现画布状态与内容
 - 实现了撤销和重做功能，开箱即用
-- 实现事件订阅发布，可以订阅多阶段事件灵活实现多样的功能，比如自动保存
+- 支持事件自定义处理，更灵活
 - 实现元素区域选中、批量选中、移动、删除、导出功能
-- 数据存储为json格式，占用空间小，回显加载快
+- 数据存储为json格式，存储与加载轻巧方便
 - 实现插件功能，可自行扩展元素，目前仅有线条、圆形和矩形
+- ...待完善
 
 ## 示例
 

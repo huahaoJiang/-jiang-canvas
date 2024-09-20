@@ -1,109 +1,39 @@
 <template>
   <div class="graffiti-container">
-    <div
-      ref="pCanvas"
-      class="w-100% card-shadow position-relative">
+    <div ref="pCanvas" class="w-100% card-shadow position-relative">
       <div class="canvas-tips text-12px">
         <div v-if="cavnasState === CANVAS_STATE.saved"><i class="i-antd-check-circle-outlined color-green mr-2px mt--2px"></i>已自动保存</div>
         <div v-if="cavnasState === CANVAS_STATE.changed"><i class="i-antd-info-circle-outlined color-red mr-2px mt--2px"></i>暂未保存</div>
       </div>
-      <div
-        ref="menuRef"
-        class="cavnas-menu-bar card-shadow">
-        <n-collapse-transition
-          class="menu"
-          :show="showMenu">
-          <n-button
-            class="mr-10px"
-            size="small"
-            @click="exportContent"
-            >导出</n-button
-          >
-          <n-button
-            size="small"
-            @click="deleteGroup"
-            >删除(Del)</n-button
-          >
+      <div ref="menuRef" class="cavnas-menu-bar card-shadow">
+        <n-collapse-transition class="menu" :show="showMenu">
+          <n-button class="mr-10px" size="small" @click="exportContent">导出</n-button>
+          <n-button size="small" @click="deleteGroup">删除(Del)</n-button>
         </n-collapse-transition>
       </div>
       <div class="opera">
         <div class="opera-bar card-shadow">
-          <n-collapse-transition
-            class="mx-12px my-6px"
-            :show="showBar">
-            <n-checkbox
-              size="small"
-              label="手写"
-              :default-checked="true"
-              @update:checked="handleAllowTouch" />
-            <n-checkbox
-              size="small"
-              label="笔写"
-              :default-checked="true"
-              @update:checked="handleAllowPen" />
+          <n-collapse-transition class="mx-12px my-6px" :show="showBar">
+            <n-checkbox size="small" label="手写" :default-checked="true" @update:checked="handleAllowTouch" />
+            <n-checkbox size="small" label="笔写" :default-checked="true" @update:checked="handleAllowPen" />
             <n-divider vertical />
-            <n-button
-              :disabled="!canRevoke"
-              @click="revoke"
-              >撤销</n-button
-            >
-            <n-button
-              :disabled="!canRedo"
-              class="ml-10px"
-              @click="reMake"
-              >回退</n-button
-            >
+            <n-button :disabled="!canRevoke" @click="revoke">撤销</n-button>
+            <n-button :disabled="!canRedo" class="ml-10px" @click="reMake">回退</n-button>
             <n-divider vertical />
-            <n-button
-              class="ml-10px"
-              @click="checkCursor"
-              >选择</n-button
-            >
-            <n-button
-              class="ml-10px"
-              @click="checkPen"
-              >钢笔</n-button
-            >
-            <n-button
-              class="ml-10px"
-              @click="checkMarker"
-              >记号笔</n-button
-            >
-            <n-button
-              class="ml-10px"
-              @click="checkErase"
-              >橡皮擦</n-button
-            >
+            <n-button class="ml-10px" @click="cutTools('Cursor')">选择</n-button>
+            <n-button class="ml-10px" @click="cutTools('Pen')">钢笔</n-button>
+            <n-button class="ml-10px" @click="cutTools('Marker')">记号笔</n-button>
+            <n-button class="ml-10px" @click="cutTools('Erase')">橡皮擦</n-button>
 
-            <n-button
-              class="ml-10px"
-              @click="checkRect"
-              >画框</n-button
-            >
-            <n-button
-              class="ml-10px"
-              @click="checkArc"
-              >画圆</n-button
-            >
-            <n-button
-              class="ml-10px"
-              @click="clearAndReplay"
-              >重置</n-button
-            >
+            <n-button class="ml-10px" @click="cutTools('Rect')">画框</n-button>
+            <n-button class="ml-10px" @click="cutTools('Arc')">画圆</n-button>
+            <n-button class="ml-10px" @click="clearAndReplay">重置</n-button>
           </n-collapse-transition>
         </div>
         <div class="btn">
-          <n-button
-            card-shadow
-            strong
-            circle
-            type="default"
-            @click="showBar = !showBar">
+          <n-button card-shadow strong circle type="default" @click="showBar = !showBar">
             <template #icon>
-              <i
-                i-antd-up-outlined
-                :class="{ 'rotate-180 mt-2px': showBar }"
-                class="color-primary"></i>
+              <i i-antd-up-outlined :class="{ 'rotate-180 mt-2px': showBar }" class="color-primary"></i>
             </template>
           </n-button>
         </div>
@@ -122,9 +52,7 @@
             }
           ">
           <template #icon>
-            <i
-              i-antd-menu-outlined
-              class="color-primary mt--2px"></i>
+            <i i-antd-menu-outlined class="color-primary mt--2px"></i>
           </template>
         </n-button>
       </div>
@@ -141,6 +69,7 @@ import type { EleGroup } from '/jhh_project/canvasPro/packages/canvas-graffiti-p
 import { CanvasGraffiti } from '/jhh_project/canvasPro/packages/canvas-graffiti-pro/src/index'
 
 import { CANVAS_STATE } from './utils'
+import { ToolType } from '@jianghh/canvas-graffiti'
 
 const pCanvas = ref()
 let canvasGraffiti: CanvasGraffiti
@@ -168,67 +97,61 @@ function init() {
   const body = pCanvas.value.getBoundingClientRect()
   const width = body.width
   lastWidth = Math.round(width)
-  canvasGraffiti = new CanvasGraffiti({
-    el: '#graffitiDemo',
-    allowType: allowType.value,
-    currentTool: 'Pen',
-    width: width,
-    height: 400,
-    color: '#6b2312',
-    lineWidth: 4
-  })
+  canvasGraffiti = new CanvasGraffiti(
+    {
+      el: '#graffitiDemo',
+      allowType: allowType.value,
+      initialTool: 'Pen',
+      width: width,
+      height: 400,
+      color: '#6b2312',
+      lineWidth: 4
+    },
+    {
+      onActionHandle: (item, revokeSize, redoSize) => {
+        cavnasState.value = CANVAS_STATE.changed
+        if (revokeSize === 0) {
+          canRevoke.value = false
+        } else {
+          canRevoke.value = true
+        }
 
+        if (redoSize === 0) {
+          canRedo.value = false
+        } else {
+          canRedo.value = true
+        }
+
+        if (timer) {
+          clearTimeout(timer)
+        }
+        timer = setTimeout(() => {
+          cavnasState.value = CANVAS_STATE.saved
+          window.localStorage.setItem('canvas_content', JSON.stringify(canvasGraffiti.getCanvasData()))
+        }, 5000)
+      },
+      onGroupHandle: (group: EleGroup | null) => {
+        if (group) {
+          showMenu.value = true
+          nextTick(() => {
+            !menuWidth && (menuWidth = menuRef.value.getBoundingClientRect().width)
+            const xPoint = (group.left + group.right - menuWidth) / 2
+            menuRef.value.style.top = (group.top > 46 ? group.top - 45 : 1) + 'px'
+            menuRef.value.style.left = (xPoint > 1 ? xPoint : 1) + 'px'
+          })
+        } else {
+          showMenu.value = false
+        }
+      },
+      onGroupMoveHandle() {
+        showMenu.value = false
+      }
+    }
+  )
   // 重写内容
   if (initialData) {
     canvasGraffiti.setCanvasData(JSON.parse(initialData))
   }
-  // 内容更改时触发，可以实现撤销、重做和自动保存功能
-  canvasGraffiti.$on('change', (item, revokeSize, redoSize) => {
-    cavnasState.value = CANVAS_STATE.changed
-    if (revokeSize === 0) {
-      canRevoke.value = false
-    } else {
-      canRevoke.value = true
-    }
-
-    if (redoSize === 0) {
-      canRedo.value = false
-    } else {
-      canRedo.value = true
-    }
-
-    if (timer) {
-      clearTimeout(timer)
-    }
-    timer = setTimeout(() => {
-      cavnasState.value = CANVAS_STATE.saved
-      window.localStorage.setItem('canvas_content', JSON.stringify(canvasGraffiti.getCanvasData()))
-    }, 5000)
-  })
-
-  // canvasGraffiti.$on('debug', (pressure: number) => {
-  //   console.log(pressure, 198)
-  // })
-
-  // 监听group的移动事件，移动时隐藏菜单条
-  canvasGraffiti.$on('groupMove', () => {
-    showMenu.value = false
-  })
-
-  // 监听group的事件，控制菜单条的显隐
-  canvasGraffiti.$on('group', (group: EleGroup | null) => {
-    if (group) {
-      showMenu.value = true
-      nextTick(() => {
-        !menuWidth && (menuWidth = menuRef.value.getBoundingClientRect().width)
-        const xPoint = (group.left + group.right - menuWidth) / 2
-        menuRef.value.style.top = (group.top > 46 ? group.top - 45 : 1) + 'px'
-        menuRef.value.style.left = (xPoint > 1 ? xPoint : 1) + 'px'
-      })
-    } else {
-      showMenu.value = false
-    }
-  })
   listenerSizeChange()
 }
 
@@ -252,7 +175,7 @@ function listenerMove(e: PointerEvent) {
   function stopResize() {
     // pCanvas.value.style.height = height + 'px'
     canvasGraffiti.updateCanvasSize({ height })
-    pCanvas.value.removeEventListener('pointermove', resizeDiv)
+    pCanvas.value.removeEventListener('pointermove', throttleHandleMove)
     document.removeEventListener('pointerup', stopResize)
   }
 }
@@ -264,7 +187,6 @@ function handleAllowTouch(checked: boolean) {
     allowType.value = allowType.value.filter(item => item !== 'touch')
   }
   canvasGraffiti.updateAllowType(allowType.value)
-  console.log(canvasGraffiti)
 }
 function handleAllowPen(checked: boolean) {
   if (checked) {
@@ -273,7 +195,6 @@ function handleAllowPen(checked: boolean) {
     allowType.value = allowType.value.filter(item => item !== 'pen')
   }
   canvasGraffiti.updateAllowType(allowType.value)
-  console.log(canvasGraffiti)
 }
 
 function revoke() {
@@ -287,7 +208,7 @@ function clearAndReplay() {
   canvasGraffiti.clear()
   canvasGraffiti.destroy()
   window.localStorage.setItem('canvas_content', '')
-  // init()
+  init()
 }
 function deleteGroup() {
   canvasGraffiti.eleGroup?.deleteGroup()
@@ -297,23 +218,8 @@ function exportContent() {
   // 导出内容，做一个弹框
 }
 
-function checkPen() {
-  canvasGraffiti.setCurrentTool('Pen')
-}
-function checkMarker() {
-  canvasGraffiti.setCurrentTool('Marker')
-}
-function checkErase() {
-  canvasGraffiti.setCurrentTool('Erase')
-}
-function checkCursor() {
-  canvasGraffiti.setCurrentTool('Cursor')
-}
-function checkRect() {
-  canvasGraffiti.setCurrentTool('Rect')
-}
-function checkArc() {
-  canvasGraffiti.setCurrentTool('Arc')
+function cutTools(name: ToolType) {
+  canvasGraffiti.toolName = name
 }
 
 function listenerSizeChange() {
@@ -353,7 +259,6 @@ onBeforeUnmount(() => {
 }
 
 canvas {
-  image-rendering: -webkit-optimize-contrast;
   image-rendering: crisp-edges;
 }
 

@@ -66,7 +66,7 @@ export class EleGroup {
 
   cancelSelected() {
     this.isSelected = false
-    this.graffiti.clear()
+    this.graffiti.flush()
     this.graffiti.drawEles()
     this.graffiti.eleGroup = null
     this.graffitiEles = null
@@ -87,7 +87,7 @@ export class EleGroup {
     this.graffitiEles.forEach(ele => {
       ele.moveEle(this.offsetX, this.offsetY)
     })
-    this.graffiti.clear()
+    this.graffiti.flush()
     this.graffiti.drawEles()
 
     this.selected()
@@ -107,7 +107,7 @@ export class EleGroup {
     })
 
     document.removeEventListener('keydown', this.eventFn)
-    this.graffiti.$emit('group', null)
+    this.graffiti.customizeHandle?.onGroupHandle?.call(this.graffiti, null)
 
     this.cancelSelected()
     this.graffiti.emitStackChange()

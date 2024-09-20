@@ -154,6 +154,6 @@ function checkArc() {
 </script>
 <style lang="scss" scoped>
 .erase-cursor {
-  cursor: url('@/assets/images/erase.png'), auto;
+  cursor: url('@/public/images/erase.png'), auto;
 }
 </style> -->

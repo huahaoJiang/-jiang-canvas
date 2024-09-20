@@ -74,7 +74,7 @@ function actionHandle(this: CanvasGraffiti, moveRect: CustomRect) {
     }
   })
   if (hasIntersect) {
-    this.clear()
+    this.flush()
     this.drawEles()
   }
 }

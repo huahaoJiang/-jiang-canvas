@@ -1,4 +1,4 @@
-import { ToolOptions } from '..'
+import { ToolOptions, ToolType } from '..'
 
 import { Cursor } from './Cursor'
 import { Pen } from './Pen'
