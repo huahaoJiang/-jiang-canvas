@@ -52,12 +52,25 @@ export const Marker = {
       }
     })
     // 将元素信息写入到数组中
-    this.graffitiEleList.push(new GraffitiEle({ tool: 'Marker', left, top, right, bottom, points: this.points }))
+    this.graffitiEleList.push(
+      new GraffitiEle({
+        tool: 'Marker',
+        left,
+        top,
+        right,
+        bottom,
+        points: this.points,
+        shadowColor: this.shadowColor,
+        lineWidth: this.lineWidth,
+        shadowBlur: this.shadowBlur,
+        strokeStyle: this.strokeStyle,
+        fillStyle: this.fillStyle
+      })
+    )
   },
   drawEle(points: Point[]) {
     let pointList: Point[] = []
     let beginPoint = points[0]
-
     this.ctx.beginPath()
     this.ctx.moveTo(beginPoint.x, beginPoint.y)
     this.ctx.arc(beginPoint.x, beginPoint.y, this.lineWidth / 2, 0, 2 * Math.PI)

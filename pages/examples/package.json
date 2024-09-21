@@ -24,6 +24,11 @@
   },
   "devDependencies": {
     "@iconify-json/ant-design": "^1.1.16",
+    "@iconify-json/fluent": "^1.2.1",
+    "@iconify-json/ion": "^1.2.0",
+    "@iconify-json/line-md": "^1.2.1",
+    "@iconify-json/material-symbols": "^1.2.1",
+    "@iconify-json/ph": "^1.2.0",
     "@types/dat.gui": "^0.7.13",
     "@types/lodash.debounce": "^4.0.9",
     "@types/lodash.throttle": "^4.1.9",

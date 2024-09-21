@@ -76,7 +76,21 @@ export const Pen = {
       }
     })
     // 将元素信息写入到数组中
-    this.graffitiEleList.push(new GraffitiEle({ tool: 'Pen', left, top, right, bottom, points: this.points }))
+    this.graffitiEleList.push(
+      new GraffitiEle({
+        tool: 'Pen',
+        left,
+        top,
+        right,
+        bottom,
+        points: this.points,
+        shadowColor: this.shadowColor,
+        lineWidth: this.lineWidth,
+        shadowBlur: this.shadowBlur,
+        strokeStyle: this.strokeStyle,
+        fillStyle: this.fillStyle
+      })
+    )
   },
   drawEle(points: Point[]) {
     let pointList: Point[] = []

@@ -6,6 +6,8 @@ export type CacheGraffiti = {
   width: CanvasGraffiti['width']
   height: CanvasGraffiti['height']
   lineWidth: CanvasGraffiti['lineWidth']
+  shadowBlur: CanvasGraffiti['shadowBlur']
+  shadowColor: CanvasGraffiti['shadowColor']
   fillStyle: CanvasGraffiti['fillStyle']
   strokeStyle: CanvasGraffiti['strokeStyle']
   dpr: CanvasGraffiti['dpr']

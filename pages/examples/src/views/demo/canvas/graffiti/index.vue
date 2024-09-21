@@ -1,42 +1,52 @@
 <template>
   <div class="graffiti-container">
-    <div ref="pCanvas" class="w-100% card-shadow position-relative">
-      <div class="canvas-tips text-12px">
-        <div v-if="cavnasState === CANVAS_STATE.saved"><i class="i-antd-check-circle-outlined color-green mr-2px mt--2px"></i>已自动保存</div>
-        <div v-if="cavnasState === CANVAS_STATE.changed"><i class="i-antd-info-circle-outlined color-red mr-2px mt--2px"></i>暂未保存</div>
+    <div class="opera">
+      <div class="opera-bar card-shadow">
+        <div>
+          <n-button-group size="small">
+            <n-button class="text-12px" :disabled="!canRevoke" @click="revoke"><i class="i-ion:arrow-undo-sharp"></i>撤销</n-button>
+            <n-button class="text-12px" :disabled="!canRedo" @click="reMake"> <i class="i-ion:arrow-redo-sharp"></i>重做</n-button>
+            <n-button class="text-12px" @click="clearAndReplay"><i class="i-ion:md-refresh"></i>重置</n-button>
+          </n-button-group>
+
+          <n-divider vertical />
+          <n-button-group size="small">
+            <n-button class="text-12px" @click="cutTools('Cursor')">
+              <i class="i-fluent:cursor-16-regular"></i>
+            </n-button>
+            <n-button class="text-12px" @click="cutTools('Pen')">
+              <i class="i-material-symbols:ink-pen-rounded"></i>
+            </n-button>
+            <n-button class="text-12px" @click="cutTools('Marker')">
+              <i class="i-line-md:marker"></i>
+            </n-button>
+            <n-button class="text-12px" @click="cutTools('Erase')">
+              <i class="i-ph:eraser"></i>
+            </n-button>
+            <n-button class="text-12px" @click="cutTools('Rect')"><i class="i-ph:rectangle"></i></n-button>
+            <!--        <n-button class="ml-10px" @click="cutTools('Arc')">圆形</n-button>-->
+          </n-button-group>
+          <div class="bar-control">
+            <i i-antd-up-outlined :class="{ 'rotate-180 mt-2px': showBar }" class="color-primary" @click="showBar = !showBar"></i>
+          </div>
+        </div>
+        <n-collapse-transition class="mt-10px" appear :show="showBar">
+          <n-checkbox class="text-12px" style="line-height: 28px" size="small" label="手写" :default-checked="true" @update:checked="handleAllowTouch" />
+          <n-checkbox class="text-12px" style="line-height: 28px" size="small" label="笔写" :default-checked="true" @update:checked="handleAllowPen" />
+          <n-button class="text-12px" size="small" @click="activate">画笔配置</n-button>
+        </n-collapse-transition>
       </div>
-      <div ref="menuRef" class="cavnas-menu-bar card-shadow">
-        <n-collapse-transition class="menu" :show="showMenu">
+    </div>
+    <div ref="pCanvas" class="w-100% card-shadow position-relative mt-36px">
+      <div class="canvas-tips text-12px">
+        <div v-if="canvasState === CANVAS_STATE.saved"><i class="i-antd-check-circle-outlined color-green mr-2px mt--2px"></i>已自动保存</div>
+        <div v-if="canvasState === CANVAS_STATE.changed"><i class="i-antd-info-circle-outlined color-red mr-2px mt--2px"></i>暂未保存</div>
+      </div>
+      <div ref="menuRef" class="canvas-menu-bar">
+        <n-collapse-transition class="menu card-shadow" appear :show="showMenu">
           <n-button class="mr-10px" size="small" @click="exportContent">导出</n-button>
           <n-button size="small" @click="deleteGroup">删除(Del)</n-button>
         </n-collapse-transition>
-      </div>
-      <div class="opera">
-        <div class="opera-bar card-shadow">
-          <n-collapse-transition class="mx-12px my-6px" :show="showBar">
-            <n-checkbox size="small" label="手写" :default-checked="true" @update:checked="handleAllowTouch" />
-            <n-checkbox size="small" label="笔写" :default-checked="true" @update:checked="handleAllowPen" />
-            <n-divider vertical />
-            <n-button :disabled="!canRevoke" @click="revoke">撤销</n-button>
-            <n-button :disabled="!canRedo" class="ml-10px" @click="reMake">回退</n-button>
-            <n-divider vertical />
-            <n-button class="ml-10px" @click="cutTools('Cursor')">选择</n-button>
-            <n-button class="ml-10px" @click="cutTools('Pen')">钢笔</n-button>
-            <n-button class="ml-10px" @click="cutTools('Marker')">记号笔</n-button>
-            <n-button class="ml-10px" @click="cutTools('Erase')">橡皮擦</n-button>
-
-            <n-button class="ml-10px" @click="cutTools('Rect')">画框</n-button>
-            <n-button class="ml-10px" @click="cutTools('Arc')">画圆</n-button>
-            <n-button class="ml-10px" @click="clearAndReplay">重置</n-button>
-          </n-collapse-transition>
-        </div>
-        <div class="btn">
-          <n-button card-shadow strong circle type="default" @click="showBar = !showBar">
-            <template #icon>
-              <i i-antd-up-outlined :class="{ 'rotate-180 mt-2px': showBar }" class="color-primary"></i>
-            </template>
-          </n-button>
-        </div>
       </div>
       <canvas id="graffitiDemo"> </canvas>
       <div class="drag-btn">
@@ -58,10 +68,16 @@
       </div>
     </div>
   </div>
+  <n-drawer v-model:show="optionsActive" :width="300" placement="right" :z-index="21" :trap-focus="false" :block-scroll="false">
+    <n-drawer-content title="画笔配置">
+      <OptionsConfig v-model:formData="canvasGraffiti" />
+    </n-drawer-content>
+  </n-drawer>
 </template>
 <script lang="ts" setup>
 import type { EleGroup } from '@jianghh/canvas-graffiti'
 import { CanvasGraffiti } from '@jianghh/canvas-graffiti'
+import OptionsConfig from './OptionsConfig.vue'
 import debounce from 'lodash.debounce'
 import throttle from 'lodash.throttle'
 
@@ -72,12 +88,12 @@ import { CANVAS_STATE } from './utils'
 import { ToolType } from '@jianghh/canvas-graffiti'
 
 const pCanvas = ref()
-let canvasGraffiti: CanvasGraffiti
-const cavnasState = ref<CANVAS_STATE>(CANVAS_STATE.unchanged)
+let canvasGraffiti = shallowRef<CanvasGraffiti>({} as CanvasGraffiti)
+const canvasState = ref<CANVAS_STATE>(CANVAS_STATE.unchanged)
 
 const canRevoke = ref(false)
 const canRedo = ref(false)
-const showBar = ref(true)
+const showBar = ref(false)
 const resizeObserver = ref()
 
 const menuRef = ref()
@@ -89,6 +105,12 @@ const allowType = ref(['mouse', 'pen', 'touch'])
 
 let timer: NodeJS.Timeout
 let initialData = window.localStorage.getItem('canvas_content')
+
+const optionsActive = ref(false)
+const activate = () => {
+  optionsActive.value = true
+}
+
 onMounted(() => {
   init()
 })
@@ -97,11 +119,11 @@ function init() {
   const body = pCanvas.value.getBoundingClientRect()
   const width = body.width
   lastWidth = Math.round(width)
-  canvasGraffiti = new CanvasGraffiti(
+  canvasGraffiti.value = new CanvasGraffiti(
     {
       el: '#graffitiDemo',
       allowType: allowType.value,
-      initialTool: 'Pen',
+      initialTool: 'Cursor',
       width: width,
       height: 400,
       color: '#6b2312',
@@ -109,7 +131,7 @@ function init() {
     },
     {
       onActionHandle: (item, revokeSize, redoSize) => {
-        cavnasState.value = CANVAS_STATE.changed
+        canvasState.value = CANVAS_STATE.changed
         if (revokeSize === 0) {
           canRevoke.value = false
         } else {
@@ -126,8 +148,8 @@ function init() {
           clearTimeout(timer)
         }
         timer = setTimeout(() => {
-          cavnasState.value = CANVAS_STATE.saved
-          window.localStorage.setItem('canvas_content', JSON.stringify(canvasGraffiti.getCanvasData()))
+          canvasState.value = CANVAS_STATE.saved
+          window.localStorage.setItem('canvas_content', JSON.stringify(canvasGraffiti.value.getCanvasData()))
         }, 5000)
       },
       onGroupHandle: (group: EleGroup | null) => {
@@ -150,7 +172,7 @@ function init() {
   )
   // 重写内容
   if (initialData) {
-    canvasGraffiti.setCanvasData(JSON.parse(initialData))
+    canvasGraffiti.value.setCanvasData(JSON.parse(initialData))
   }
   listenerSizeChange()
 }
@@ -174,7 +196,7 @@ function listenerMove(e: PointerEvent) {
 
   function stopResize() {
     // pCanvas.value.style.height = height + 'px'
-    canvasGraffiti.updateCanvasSize({ height })
+    canvasGraffiti.value.updateCanvasSize({ height })
     pCanvas.value.removeEventListener('pointermove', throttleHandleMove)
     document.removeEventListener('pointerup', stopResize)
   }
@@ -186,7 +208,7 @@ function handleAllowTouch(checked: boolean) {
   } else {
     allowType.value = allowType.value.filter(item => item !== 'touch')
   }
-  canvasGraffiti.updateAllowType(allowType.value)
+  canvasGraffiti.value.updateAllowType(allowType.value)
 }
 function handleAllowPen(checked: boolean) {
   if (checked) {
@@ -194,26 +216,26 @@ function handleAllowPen(checked: boolean) {
   } else {
     allowType.value = allowType.value.filter(item => item !== 'pen')
   }
-  canvasGraffiti.updateAllowType(allowType.value)
+  canvasGraffiti.value.updateAllowType(allowType.value)
 }
 
 function revoke() {
-  canvasGraffiti.revoke()
+  canvasGraffiti.value.revoke()
 }
 function reMake() {
-  canvasGraffiti.redo()
+  canvasGraffiti.value.redo()
 }
 
 function clearAndReplay() {
   initialData = null
   window.localStorage.setItem('canvas_content', '')
-  canvasGraffiti.clear()
-  canvasGraffiti.destroy()
+  canvasGraffiti.value.clear()
+  canvasGraffiti.value.destroy()
   init()
 }
 
 function deleteGroup() {
-  canvasGraffiti.eleGroup?.deleteGroup()
+  canvasGraffiti.value.eleGroup?.deleteGroup()
   showMenu.value = false
 }
 
@@ -222,7 +244,7 @@ function exportContent() {
 }
 
 function cutTools(name: ToolType) {
-  canvasGraffiti.toolName = name
+  canvasGraffiti.value.toolName = name
 }
 
 function listenerSizeChange() {
@@ -233,7 +255,7 @@ function listenerSizeChange() {
         const { width } = entry.contentRect
         const newWidth = Math.round(width)
         if (newWidth !== lastWidth) {
-          canvasGraffiti.updateCanvasSize({ width })
+          canvasGraffiti.value.updateCanvasSize({ width })
           lastWidth = newWidth
         }
       }
@@ -265,25 +287,30 @@ canvas {
   image-rendering: crisp-edges;
 }
 
-.erase-cursor {
-  cursor: url('@/assets/images/erase.png'), auto;
-}
 .opera {
   position: absolute;
-  top: 4px;
-  left: 0px;
-  right: 0px;
+  top: 8px;
+  left: 0;
+  right: 0;
+  z-index: 18;
   display: flex;
+
   justify-content: center;
+  padding-bottom: 10px;
   .opera-bar {
     background: #fff;
     border-radius: 6px;
-  }
-  .btn {
-    position: absolute;
-    bottom: -36px;
-    left: 50%;
-    transform: translateX(-50%);
+    padding: 4px 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    .bar-control {
+      display: inline-flex;
+      line-height: 28px;
+      margin-left: 10px;
+      cursor: pointer;
+    }
   }
 }
 .drag-btn {
@@ -298,14 +325,15 @@ canvas {
   right: 20px;
   top: 20px;
 }
-.cavnas-menu-bar {
+
+.canvas-menu-bar {
   position: absolute;
   top: 0;
   left: 0;
   background: #fff;
-  border-radius: 6px;
   .menu {
     padding: 4px 8px;
+    border-radius: 6px;
   }
 }
 </style>

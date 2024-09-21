@@ -4,6 +4,7 @@ import { genRectByTwoPoint, isRectIntersect, CustomRect } from '../element'
 export const Erase = {
   buffer: true,
   pointerdown({ offsetX: x, offsetY: y }) {
+    y += 12
     this.bufferCtx!.moveTo(x, y)
     this.points.push({ x: x >> 0, y: y >> 0 })
     this.bufferCtx.lineJoin = 'round'
@@ -20,6 +21,7 @@ export const Erase = {
     })
   },
   pointermove({ offsetX: x, offsetY: y }) {
+    y += 12
     this.points.push({ x: x >> 0, y: y >> 0 })
 
     if (this.points.length < 4) return

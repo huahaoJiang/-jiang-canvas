@@ -57,6 +57,11 @@ importers:
   pages/examples:
     specifiers:
       '@iconify-json/ant-design': ^1.1.16
+      '@iconify-json/fluent': ^1.2.1
+      '@iconify-json/ion': ^1.2.0
+      '@iconify-json/line-md': ^1.2.1
+      '@iconify-json/material-symbols': ^1.2.1
+      '@iconify-json/ph': ^1.2.0
       '@jianghh/canvas-graffiti': workspace:^0.0.2
       '@types/dat.gui': ^0.7.13
       '@types/lodash.debounce': ^4.0.9
@@ -109,6 +114,11 @@ importers:
       vue-router: 4.4.3_vue@3.4.38
     devDependencies:
       '@iconify-json/ant-design': 1.1.17
+      '@iconify-json/fluent': 1.2.1
+      '@iconify-json/ion': 1.2.0
+      '@iconify-json/line-md': 1.2.1
+      '@iconify-json/material-symbols': 1.2.1
+      '@iconify-json/ph': 1.2.0
       '@types/dat.gui': 0.7.13
       '@types/lodash.debounce': 4.0.9
       '@types/lodash.throttle': 4.1.9
@@ -1369,6 +1379,36 @@ packages:
       '@iconify/types': 2.0.0
     dev: true
 
+  /@iconify-json/fluent/1.2.1:
+    resolution: {integrity: sha512-jvKSynYz6iuYuZDwDry4BxVcDHMrr/cFN5DMi6JOdTubYEHCT+oxyyIVjjSKtX5ebnlhJIuHVI+LhC/U9HSoFQ==}
+    dependencies:
+      '@iconify/types': 2.0.0
+    dev: true
+
+  /@iconify-json/ion/1.2.0:
+    resolution: {integrity: sha512-uyFGINF59wOZDgXNkUTXTnzL2qeTfwbjP45JidRwhFK2JvFH9wyhXHz+TXqrG80PbQsNCqhIgGfwHmASWbutsg==}
+    dependencies:
+      '@iconify/types': 2.0.0
+    dev: true
+
+  /@iconify-json/line-md/1.2.1:
+    resolution: {integrity: sha512-XMga2q5PiQ2LrU7K06hfqSYOA+7UFhRwhl52xvPCPAiLmtdfWBeX38nA46mcaLj7sdNo+DK+BJy9iTrzQ0ewNw==}
+    dependencies:
+      '@iconify/types': 2.0.0
+    dev: true
+
+  /@iconify-json/material-symbols/1.2.1:
+    resolution: {integrity: sha512-r9yaBzlUmN87aCTSoCNtDCd7R9F0iVDjNPL9QHHhm1WglFJvTUKx9iBC5xcZpP0qN0bg9R5FkM90CndWxEBAnw==}
+    dependencies:
+      '@iconify/types': 2.0.0
+    dev: true
+
+  /@iconify-json/ph/1.2.0:
+    resolution: {integrity: sha512-013eLpgTmX1lACOuDnkuhC7gRHyYj9w/j8SyDmlyUYvsKQrwdRsv1otcXtwH3DevuDAzSkreeeRsCeez+gTyVA==}
+    dependencies:
+      '@iconify/types': 2.0.0
+    dev: true
+
   /@iconify/types/2.0.0:
     resolution: {integrity: sha512-+wluvCrRhXrhyOmRDJ3q8mux9JkKy5SJ/v8ol2tu4FVjyYvtEzkc/3pK15ET6RKg4b4w4BmTk1+gsCUhf21Ykg==}
     dev: true
@@ -2212,7 +2252,7 @@ packages:
       vite: ^5.0.0
       vue: ^3.2.25
     dependencies:
-      vite: 5.4.1_@types+node@18.19.44
+      vite: 5.4.1_d4fpz5s3ukuwilcm5um4kdgl6a
       vue: 3.4.38_typescript@4.9.5
     dev: true
 

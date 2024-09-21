@@ -1,5 +1,6 @@
 import { genRectByTwoPoint, isRectIntersect, CustomRect, EleGroup } from '../element'
 import { ToolOptions, CanvasGraffiti, SYSTEM_COLOR } from '..'
+import CursorImage from '../assets/cursor.png'
 
 // 光标选择。交互操作，选中，拖动等操作实现
 export const Cursor = {
@@ -14,7 +15,7 @@ export const Cursor = {
       if (isRectIntersect(this.eleGroup, { left: x, top: y, right: x, bottom: y })) {
         this.ctx.canvas.style.cursor = 'move'
       } else {
-        this.ctx.canvas.style.cursor = 'crosshair'
+        this.ctx.canvas.style.cursor = 'url(' + CursorImage + '), auto'
 
         // 在选中框外面，删除group内容，取消选中效果
         this.eleGroup.cancelSelected()
@@ -43,7 +44,7 @@ export const Cursor = {
   pointerup() {
     //有选中Group的情况下，动作结束
     if (this.eleGroup?.isSelected) {
-      this.ctx.canvas.style.cursor = 'crosshair'
+      this.ctx.canvas.style.cursor = 'url(' + CursorImage + '), auto'
       this.customizeHandle?.onGroupHandle?.call(this, this.eleGroup)
       this.eleGroup.moveFinish()
       //记录当前动作，选择比较特殊，所以内部手动调用

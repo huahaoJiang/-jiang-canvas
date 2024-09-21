@@ -4,6 +4,10 @@ import { CacheStack, CacheGraffiti } from './stack'
 import { GraffitiEle } from './element'
 import type { EleGroup } from './element/group'
 import { GraffitiPlugin } from './plugin'
+
+import CursorImage from './assets/cursor.png'
+import EraserImage from './assets/eraser.png'
+
 export * from './types'
 export * from './element'
 export * from './stack'
@@ -71,10 +75,10 @@ export class CanvasGraffiti implements ToolOptions {
   #strokeStyle: string | CanvasGradient | CanvasPattern
 
   // 阴影颜色
-  shadowColor: string
+  #shadowColor: string
 
   // 阴影范围大小
-  shadowBlur: number
+  #shadowBlur: number
 
   get width() {
     return this.#width
@@ -125,12 +129,20 @@ export class CanvasGraffiti implements ToolOptions {
     return this.#fillStyle
   }
 
-  // 阴影
-  private setShadow() {
-    if (this.shadowBlur) {
-      this.ctx.shadowBlur = this.shadowBlur
-      this.ctx.shadowColor = this.shadowColor
-    }
+  set shadowColor(val: string) {
+    this.#shadowColor = val
+    this.ctx.shadowColor = val
+  }
+  get shadowColor() {
+    return this.#shadowColor
+  }
+
+  set shadowBlur(val: number) {
+    this.#shadowBlur = val
+    this.ctx.shadowBlur = val
+  }
+  get shadowBlur() {
+    return this.#shadowBlur
   }
 
   // 当前工具
@@ -142,6 +154,13 @@ export class CanvasGraffiti implements ToolOptions {
       // 切换工具时，删除选中效果
       this.eleGroup.cancelSelected()
       this.customizeHandle?.onGroupHandle?.call(this, this.eleGroup)
+    }
+    if (value === 'Cursor') {
+      this.ctx.canvas.style.cursor = 'url(' + CursorImage + '), auto'
+    } else if (value === 'Erase') {
+      this.ctx.canvas.style.cursor = 'url(' + EraserImage + '), auto'
+    } else {
+      this.ctx.canvas.style.cursor = 'crosshair'
     }
     this.#toolName = value
   }
@@ -173,17 +192,14 @@ export class CanvasGraffiti implements ToolOptions {
     this.options.lineWidth && (this.lineWidth = this.options.lineWidth)
     this.options.color && (this.strokeStyle = this.fillStyle = this.options.color)
 
-    if (this.options.shadowBlur) {
-      this.shadowBlur = this.options.shadowBlur
-      this.shadowColor = this.options.shadowColor
-    }
+    this.#shadowBlur = this.options.shadowBlur || 0
+    this.#shadowColor = this.options.shadowColor || 'rgba(1,1,1,0.6)'
 
     this.toolName = this.options.initialTool!
     this.allowType = this.options.allowType!
     this.allowButton = this.options.allowButton!
 
     this.ctx.scale(this.dpr, this.dpr)
-    this.ctx.canvas.style.cursor = 'crosshair'
 
     this.cacheStack = new CacheStack(options.cacheSize || 5)
     this.init()
@@ -199,7 +215,8 @@ export class CanvasGraffiti implements ToolOptions {
     this.fillStyle = this.#fillStyle
     this.strokeStyle = this.#strokeStyle
     this.lineWidth = this.#lineWidth
-    this.setShadow()
+    this.shadowBlur = this.#shadowBlur
+    this.shadowColor = this.#shadowColor
   }
 
   /**
@@ -375,32 +392,58 @@ export class CanvasGraffiti implements ToolOptions {
     this.customizeHandle?.onActionHandle?.call(this, data, this.cacheStack.revokeSize, this.cacheStack.redoSize)
   }
 
+  updateCtx(config: GraffitiEle) {
+    this.ctx.strokeStyle = config.strokeStyle
+    this.ctx.lineWidth = config.lineWidth
+    this.ctx.shadowBlur = config.shadowBlur
+    this.ctx.fillStyle = config.fillStyle
+    this.ctx.shadowColor = config.shadowColor
+  }
+
   // 绘制ele元素数据
   drawEles(graffitiEleList?: GraffitiEle[]) {
     // 重绘graffitiEleList的内容
+    this.ctx.save()
     if (graffitiEleList) {
       graffitiEleList.forEach(ele => {
+        this.updateCtx(ele)
         tools[ele.tool].drawEle?.call(this, ele.points)
       })
     } else {
       // 全部重绘
       this.graffitiEleList = this.graffitiEleList.filter(ele => !ele.isDeleted)
       this.graffitiEleList.forEach(ele => {
+        this.updateCtx(ele)
         tools[ele.tool].drawEle?.call(this, ele.points)
       })
     }
+    this.ctx.restore()
   }
 
   // 获取足够重绘的必要数据
-  getCanvasData() {
+  getCanvasData(): CacheGraffiti {
     const eleInfoList = this.graffitiEleList.map(ele => {
-      return { tool: ele.tool, left: ele.left, top: ele.top, right: ele.right, bottom: ele.bottom, points: ele.points }
+      return {
+        tool: ele.tool,
+        left: ele.left,
+        top: ele.top,
+        right: ele.right,
+        bottom: ele.bottom,
+        points: ele.points,
+        shadowColor: ele.shadowColor,
+        lineWidth: ele.lineWidth,
+        shadowBlur: ele.shadowBlur,
+        strokeStyle: ele.strokeStyle,
+        fillStyle: ele.fillStyle
+      }
     })
     return {
       eleInfoList,
       width: this.width,
       height: this.height,
       lineWidth: this.lineWidth,
+      shadowBlur: this.shadowBlur,
+      shadowColor: this.shadowColor,
       fillStyle: this.fillStyle,
       strokeStyle: this.strokeStyle,
       dpr: this.dpr

@@ -1,5 +1,6 @@
 import { roundToNDecimalPlaces } from '../utils'
 import { ToolType, Point } from '..'
+import CanvasGraffiti from '../index'
 export * from './group'
 
 export type IElement = Required<IElementOptions> & {}
@@ -11,9 +12,14 @@ export interface IElementOptions {
   right: number
   bottom: number
   points: Point[]
+  lineWidth: CanvasGraffiti['lineWidth']
+  shadowBlur: CanvasGraffiti['shadowBlur']
+  shadowColor: CanvasGraffiti['shadowColor']
+  strokeStyle: CanvasGraffiti['strokeStyle']
+  fillStyle: CanvasGraffiti['fillStyle']
 }
 
-export type OptionKey = keyof Omit<IElementOptions, 'tool' | 'points'>
+export type OptionNumberKey = keyof Omit<IElementOptions, 'tool' | 'points' | 'shadowColor' | 'fillStyle' | 'strokeStyle'>
 
 export type CustomRect = { left: number; right: number; top: number; bottom: number }
 
@@ -26,6 +32,11 @@ export class GraffitiEle implements IElement {
   width: number
   height: number
   points: Point[]
+  lineWidth: CanvasGraffiti['lineWidth']
+  shadowBlur: CanvasGraffiti['shadowBlur']
+  shadowColor: CanvasGraffiti['shadowColor']
+  strokeStyle: CanvasGraffiti['strokeStyle']
+  fillStyle: CanvasGraffiti['fillStyle']
   isDeleted: boolean = false
 
   constructor(options: IElementOptions) {
@@ -34,8 +45,14 @@ export class GraffitiEle implements IElement {
         this.tool = options.tool
       } else if (key === 'points') {
         this.points = options.points
+      } else if (key === 'shadowColor') {
+        this.shadowColor = options.shadowColor
+      } else if (key === 'strokeStyle') {
+        this.strokeStyle = options.strokeStyle
+      } else if (key === 'fillStyle') {
+        this.fillStyle = options.fillStyle
       } else {
-        this[key as OptionKey] = options[key as OptionKey]
+        this[key as OptionNumberKey] = options[key as OptionNumberKey]
       }
     }
     this.width = this.right - this.left

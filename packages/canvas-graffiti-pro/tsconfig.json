@@ -13,6 +13,7 @@
     "strictNullChecks": false,
     "lib": ["esnext", "dom", "DOM.Iterable"],
     "baseUrl": ".",
+    "typeRoots": ["env.d.ts"],
     "paths": {
       "@/*": ["src/*"],
     },
@@ -20,6 +21,6 @@
     "declaration": true, // 构建时生成类型文件
     "noImplicitAny": true
   },
-  "include": ["**/*.ts", "**/*.d.ts", "**/*.tsx", "**/*.vue"],
+  "include": ["**/*.ts", "**/*.d.ts", "**/*.tsx", "**/*.vue", "**/*.png"],
   "exclude": ["es", "lib", "node_modules", "./changelog.ts"]
 }
