@@ -1,10 +1,12 @@
 import { defineStore } from 'pinia'
 
+type ScreenSize = 'large' | 'middle' | 'small'
 export const useAppStore = defineStore('app', {
   state() {
     return {
       reloadFlag: true,
-      collapsed: false
+      collapsed: false,
+      screenSize: 'large'
     }
   },
   actions: {
@@ -24,6 +26,9 @@ export const useAppStore = defineStore('app', {
     },
     setCollapsed(collapsed: boolean): void {
       this.collapsed = collapsed
+    },
+    setScreenSize(size: 'large' | 'middle' | 'small') {
+      this.screenSize = size
     }
   }
 })

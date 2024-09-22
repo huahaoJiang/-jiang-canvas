@@ -7,6 +7,7 @@ import { GraffitiPlugin } from './plugin'
 
 import CursorImage from './assets/cursor.png'
 import EraserImage from './assets/eraser.png'
+import { updateCtx } from './utils'
 
 export * from './types'
 export * from './element'
@@ -392,28 +393,20 @@ export class CanvasGraffiti implements ToolOptions {
     this.customizeHandle?.onActionHandle?.call(this, data, this.cacheStack.revokeSize, this.cacheStack.redoSize)
   }
 
-  updateCtx(config: GraffitiEle) {
-    this.ctx.strokeStyle = config.strokeStyle
-    this.ctx.lineWidth = config.lineWidth
-    this.ctx.shadowBlur = config.shadowBlur
-    this.ctx.fillStyle = config.fillStyle
-    this.ctx.shadowColor = config.shadowColor
-  }
-
   // 绘制ele元素数据
   drawEles(graffitiEleList?: GraffitiEle[]) {
     // 重绘graffitiEleList的内容
     this.ctx.save()
     if (graffitiEleList) {
       graffitiEleList.forEach(ele => {
-        this.updateCtx(ele)
+        updateCtx(this, ele)
         tools[ele.tool].drawEle?.call(this, ele.points)
       })
     } else {
       // 全部重绘
       this.graffitiEleList = this.graffitiEleList.filter(ele => !ele.isDeleted)
       this.graffitiEleList.forEach(ele => {
-        this.updateCtx(ele)
+        updateCtx(this, ele)
         tools[ele.tool].drawEle?.call(this, ele.points)
       })
     }

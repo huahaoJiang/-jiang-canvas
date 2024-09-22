@@ -14,7 +14,7 @@ export interface ToolOptions {
   // 抬起
   pointerup?: (this: CanvasGraffiti, event: PointerEvent) => void
 
-  drawEle?: (this: CanvasGraffiti, points: Point[]) => void
+  drawEle?: (this: CanvasGraffiti | EleGroup, points: Point[]) => void
 }
 
 /**

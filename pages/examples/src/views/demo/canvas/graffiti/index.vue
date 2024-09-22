@@ -1,43 +1,34 @@
 <template>
   <div class="graffiti-container">
     <div class="opera">
-      <div class="opera-bar card-shadow">
-        <div>
-          <n-button-group size="small">
-            <n-button class="text-12px" :disabled="!canRevoke" @click="revoke"><i class="i-ion:arrow-undo-sharp"></i>撤销</n-button>
-            <n-button class="text-12px" :disabled="!canRedo" @click="reMake"> <i class="i-ion:arrow-redo-sharp"></i>重做</n-button>
-            <n-button class="text-12px" @click="clearAndReplay"><i class="i-ion:md-refresh"></i>重置</n-button>
-          </n-button-group>
+      <div class="opera-bar card-shadow" :class="currentScreen">
+        <n-button-group size="small">
+          <n-button class="text-12px" :disabled="!canRevoke" @click="revoke"><i class="i-ion:arrow-undo-sharp"></i>撤销</n-button>
+          <n-button class="text-12px" :disabled="!canRedo" @click="reMake"> <i class="i-ion:arrow-redo-sharp"></i>重做</n-button>
+          <n-button class="text-12px" @click="clearAndReplay"><i class="i-ion:md-refresh"></i>重置</n-button>
+        </n-button-group>
 
-          <n-divider vertical />
-          <n-button-group size="small">
-            <n-button class="text-12px" @click="cutTools('Cursor')">
-              <i class="i-fluent:cursor-16-regular"></i>
-            </n-button>
-            <n-button class="text-12px" @click="cutTools('Pen')">
-              <i class="i-material-symbols:ink-pen-rounded"></i>
-            </n-button>
-            <n-button class="text-12px" @click="cutTools('Marker')">
-              <i class="i-line-md:marker"></i>
-            </n-button>
-            <n-button class="text-12px" @click="cutTools('Erase')">
-              <i class="i-ph:eraser"></i>
-            </n-button>
-            <n-button class="text-12px" @click="cutTools('Rect')"><i class="i-ph:rectangle"></i></n-button>
-            <!--        <n-button class="ml-10px" @click="cutTools('Arc')">圆形</n-button>-->
-          </n-button-group>
-          <div class="bar-control">
-            <i i-antd-up-outlined :class="{ 'rotate-180 mt-2px': showBar }" class="color-primary" @click="showBar = !showBar"></i>
-          </div>
-        </div>
-        <n-collapse-transition class="mt-10px" appear :show="showBar">
-          <n-checkbox class="text-12px" style="line-height: 28px" size="small" label="手写" :default-checked="true" @update:checked="handleAllowTouch" />
-          <n-checkbox class="text-12px" style="line-height: 28px" size="small" label="笔写" :default-checked="true" @update:checked="handleAllowPen" />
-          <n-button class="text-12px" size="small" @click="activate">画笔配置</n-button>
-        </n-collapse-transition>
+        <n-divider vertical />
+        <n-button-group size="small">
+          <n-button class="text-12px" :type="btn.active ? 'primary' : 'default'" v-for="btn in btnList" :key="btn.toolName" @click="cutTools(btn.toolName)">
+            <i :class="btn.icon"></i>
+          </n-button>
+          <!--        <n-button class="ml-10px" @click="cutTools('Arc')">圆形</n-button>-->
+        </n-button-group>
+        <n-divider vertical v-if="currentScreen !== 'small'" />
+        <n-checkbox
+          class="text-12px"
+          :class="{ 'ml-12px': currentScreen === 'small' }"
+          style="line-height: 28px"
+          size="small"
+          label="手写"
+          :default-checked="true"
+          @update:checked="handleAllowTouch" />
+        <n-checkbox class="text-12px" style="line-height: 28px" size="small" label="笔写" :default-checked="true" @update:checked="handleAllowPen" />
+        <n-button class="text-12px" size="small" @click="activate">画笔配置</n-button>
       </div>
     </div>
-    <div ref="pCanvas" class="w-100% card-shadow position-relative mt-36px">
+    <div ref="pCanvas" class="w-100% card-shadow position-relative">
       <div class="canvas-tips text-12px">
         <div v-if="canvasState === CANVAS_STATE.saved"><i class="i-antd-check-circle-outlined color-green mr-2px mt--2px"></i>已自动保存</div>
         <div v-if="canvasState === CANVAS_STATE.changed"><i class="i-antd-info-circle-outlined color-red mr-2px mt--2px"></i>暂未保存</div>
@@ -67,25 +58,28 @@
         </n-button>
       </div>
     </div>
+    <n-drawer v-model:show="optionsActive" :width="300" placement="right" :z-index="21" :trap-focus="false" :block-scroll="false">
+      <n-drawer-content title="画笔配置">
+        <OptionsConfig v-model:formData="canvasGraffiti" />
+      </n-drawer-content>
+    </n-drawer>
   </div>
-  <n-drawer v-model:show="optionsActive" :width="300" placement="right" :z-index="21" :trap-focus="false" :block-scroll="false">
-    <n-drawer-content title="画笔配置">
-      <OptionsConfig v-model:formData="canvasGraffiti" />
-    </n-drawer-content>
-  </n-drawer>
 </template>
 <script lang="ts" setup>
 import type { EleGroup } from '@jianghh/canvas-graffiti'
 import { CanvasGraffiti } from '@jianghh/canvas-graffiti'
+// import type { EleGroup } from '/jhh_project/canvasPro/packages/canvas-graffiti-pro/src/element/index'
+// import { CanvasGraffiti } from '/jhh_project/canvasPro/packages/canvas-graffiti-pro/src/index'
+
 import OptionsConfig from './OptionsConfig.vue'
 import debounce from 'lodash.debounce'
 import throttle from 'lodash.throttle'
 
-// import type { EleGroup } from '/jhh_project/canvasPro/packages/canvas-graffiti-pro/src/element/index'
-// import { CanvasGraffiti } from '/jhh_project/canvasPro/packages/canvas-graffiti-pro/src/index'
-
-import { CANVAS_STATE } from './utils'
+import { CANVAS_STATE, downloadBase64File, operaBtn } from './utils'
 import { ToolType } from '@jianghh/canvas-graffiti'
+import { useAppStore } from '@/store/app'
+
+const btnList = ref(operaBtn())
 
 const pCanvas = ref()
 let canvasGraffiti = shallowRef<CanvasGraffiti>({} as CanvasGraffiti)
@@ -93,7 +87,6 @@ const canvasState = ref<CANVAS_STATE>(CANVAS_STATE.unchanged)
 
 const canRevoke = ref(false)
 const canRedo = ref(false)
-const showBar = ref(false)
 const resizeObserver = ref()
 
 const menuRef = ref()
@@ -110,6 +103,9 @@ const optionsActive = ref(false)
 const activate = () => {
   optionsActive.value = true
 }
+
+const useApp = useAppStore()
+const currentScreen = computed(() => useApp.screenSize)
 
 onMounted(() => {
   init()
@@ -150,7 +146,7 @@ function init() {
         timer = setTimeout(() => {
           canvasState.value = CANVAS_STATE.saved
           window.localStorage.setItem('canvas_content', JSON.stringify(canvasGraffiti.value.getCanvasData()))
-        }, 5000)
+        }, 1000)
       },
       onGroupHandle: (group: EleGroup | null) => {
         if (group) {
@@ -241,10 +237,20 @@ function deleteGroup() {
 
 function exportContent() {
   // 导出内容，做一个弹框
+  const data = canvasGraffiti.value.eleGroup?.toDataURL()
+  downloadBase64File(data!)
+  showMenu.value = false
 }
 
 function cutTools(name: ToolType) {
   canvasGraffiti.value.toolName = name
+  btnList.value.forEach(btn => {
+    if (btn.toolName === name) {
+      btn.active = true
+    } else {
+      btn.active = false
+    }
+  })
 }
 
 function listenerSizeChange() {
@@ -288,15 +294,10 @@ canvas {
 }
 
 .opera {
-  position: absolute;
-  top: 8px;
-  left: 0;
-  right: 0;
-  z-index: 18;
   display: flex;
-
   justify-content: center;
-  padding-bottom: 10px;
+  padding-bottom: 8px;
+  margin-top: -8px;
   .opera-bar {
     background: #fff;
     border-radius: 6px;
@@ -304,7 +305,8 @@ canvas {
     display: flex;
     justify-content: center;
     align-items: center;
-    flex-direction: column;
+    flex-wrap: wrap;
+    gap: 8px 0;
     .bar-control {
       display: inline-flex;
       line-height: 28px;

@@ -1,4 +1,4 @@
-import CanvasGraffiti from '..'
+import CanvasGraffiti, { EleGroup, GraffitiEle } from '..'
 
 export function roundToNDecimalPlaces(num: number, n = 2) {
   return parseFloat(num.toFixed(n))
@@ -25,4 +25,12 @@ export function deepClone(obj: any, hash = new WeakMap()) {
   }
 
   return cloneObj
+}
+
+export function updateCtx(vm: CanvasGraffiti | EleGroup, config: GraffitiEle) {
+  vm.ctx.strokeStyle = config.strokeStyle
+  vm.ctx.lineWidth = config.lineWidth
+  vm.ctx.shadowBlur = config.shadowBlur
+  vm.ctx.fillStyle = config.fillStyle
+  vm.ctx.shadowColor = config.shadowColor
 }

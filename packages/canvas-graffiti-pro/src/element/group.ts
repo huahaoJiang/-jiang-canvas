@@ -1,6 +1,9 @@
 import { Point, SYSTEM_COLOR, CanvasGraffiti } from '..'
 import type { GraffitiEle } from './index'
+import { tools } from '../tools'
+import { updateCtx } from '../utils'
 
+const GROUP_PIC_OFFSET = 20
 export class EleGroup {
   left: number
   top: number
@@ -17,10 +20,17 @@ export class EleGroup {
   isCdTime: number
   offsetX: number
   offsetY: number
+  lineWidth: number
+  bufferCanvas: HTMLCanvasElement | null
+
+  get ctx() {
+    return this.bufferCanvas?.getContext('2d')
+  }
 
   constructor(graffiti: CanvasGraffiti, graffitiEles: GraffitiEle[]) {
     this.graffiti = graffiti
     this.graffitiEles = graffitiEles
+    this.lineWidth = graffiti.lineWidth
     this.offsetX = 0
     this.offsetY = 0
     graffitiEles.forEach((ele, index) => {
@@ -93,6 +103,52 @@ export class EleGroup {
     this.selected()
     this.offsetX = 0
     this.offsetY = 0
+  }
+
+  toDataURL(type = 'image/png', encoderOptions = 0.92) {
+    const el = this.graffiti.el
+    const dpr = this.graffiti.dpr
+    const tempCanvas = el.cloneNode() as HTMLCanvasElement
+    tempCanvas.style.position = 'absolute'
+    tempCanvas.style.zIndex += 100
+    tempCanvas.style.pointerEvents = 'none'
+    tempCanvas.width = (GROUP_PIC_OFFSET * 2 + this.width) * dpr
+    tempCanvas.height = (this.height + GROUP_PIC_OFFSET * 2) * dpr
+    tempCanvas.style.width = GROUP_PIC_OFFSET * 2 + this.width + 'px'
+    tempCanvas.style.height = this.height + GROUP_PIC_OFFSET * 2 + 'px'
+    el.appendChild(tempCanvas)
+    this.bufferCanvas = tempCanvas
+    this.ctx.lineCap = 'round'
+    this.ctx.lineJoin = 'round'
+    this.ctx.imageSmoothingEnabled = true
+    this.ctx!.scale(dpr, dpr)
+    this.drawEleList()
+    const data = tempCanvas.toDataURL(type, encoderOptions)
+
+    setTimeout(() => {
+      this.bufferCanvas.remove()
+      this.cancelSelected()
+    }, 0)
+    return data
+  }
+
+  drawEleList() {
+    this.ctx.save()
+    this.graffitiEles = this.graffitiEles.filter(ele => !ele.isDeleted)
+    this.graffitiEles.forEach(ele => {
+      updateCtx(this, ele)
+      tools[ele.tool].drawEle?.call(
+        this,
+        ele.points.map(point => {
+          return {
+            x: point.x - this.left + GROUP_PIC_OFFSET,
+            y: point.y - this.top + GROUP_PIC_OFFSET,
+            pressure: point.pressure
+          }
+        })
+      )
+    })
+    this.ctx.restore()
   }
 
   moveFinish() {
