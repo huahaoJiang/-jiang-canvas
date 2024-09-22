@@ -11,7 +11,7 @@
         <n-divider vertical />
         <n-button-group size="small">
           <n-button class="text-12px" :type="btn.active ? 'primary' : 'default'" v-for="btn in btnList" :key="btn.toolName" @click="cutTools(btn.toolName)">
-            <i :class="btn.icon"></i>
+            <component :is="btn.icon" />
           </n-button>
           <!--        <n-button class="ml-10px" @click="cutTools('Arc')">圆形</n-button>-->
         </n-button-group>

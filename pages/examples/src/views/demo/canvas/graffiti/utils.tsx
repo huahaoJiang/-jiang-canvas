@@ -5,37 +5,42 @@ export enum CANVAS_STATE {
   'changed' = 1,
   'saved' = 2
 }
+
 type BtnType = {
   toolName: ToolType
-  icon: string
+  icon: any
   active: boolean
 }
 
+export function renderIcon(className: string = '') {
+  // @ts-ignore
+  return () => h(<i class={className} />)
+}
 export const operaBtn = (activate?: ToolType): BtnType[] => {
   return [
     {
       toolName: 'Cursor',
-      icon: 'i-fluent:cursor-16-regular',
+      icon: renderIcon('i-fluent:cursor-16-regular'),
       active: activate === undefined || activate === 'Cursor'
     },
     {
       toolName: 'Pen',
-      icon: 'i-material-symbols:ink-pen-rounded',
+      icon: renderIcon('i-material-symbols:ink-pen-rounded'),
       active: activate === 'Pen'
     },
     {
       toolName: 'Marker',
-      icon: 'i-line-md:marker',
+      icon: renderIcon('i-line-md:marker'),
       active: activate === 'Marker'
     },
     {
       toolName: 'Erase',
-      icon: 'i-ph:eraser',
+      icon: renderIcon('i-ph:eraser'),
       active: activate === 'Erase'
     },
     {
       toolName: 'Rect',
-      icon: 'i-ph:rectangle',
+      icon: renderIcon('i-ph:rectangle'),
       active: activate === 'Rect'
     }
   ]

@@ -7,7 +7,7 @@
     "sourceMap": true,
     "esModuleInterop": true,
     // "strictNullChecks": true,
-    "lib": ["esnext", "dom", "DOM.Iterable"],
+    "lib": ["esnext", "dom"],
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
@@ -28,6 +28,8 @@
     "moduleDetection": "force",
     "noEmit": true,
     "jsx": "preserve",
+    "jsxFactory": "h",
+    "jsxFragmentFactory": "Fragment",
 
     /* Linting */
     "strict": true,
@@ -35,6 +37,6 @@
     "noUnusedParameters": false,
     "noFallthroughCasesInSwitch": false
   },
-  "include": ["src"],
+  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue"],
   "exclude": ["node_modules", "jianghh"]
 }
