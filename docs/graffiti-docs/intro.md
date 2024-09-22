@@ -24,6 +24,6 @@
 - 实现插件功能，可自行扩展元素，目前仅有线条、圆形和矩形
 - ...待完善
 
-## 示例
+## 体验地址
 
-[Demo展示](http://121.41.53.237/jianghh/display/graffiti)
+[点击前往](http://121.41.53.237/jianghh/display/graffiti)
